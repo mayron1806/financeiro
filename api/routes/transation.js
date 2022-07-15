@@ -2,7 +2,6 @@ const router = require("express").Router();
 const moment = require("moment");
 const validateUserID = require("../middlewares/validateUserID");
 const transationModel = require("../models/transation");
-const mongoose = require("mongoose");
 router.use(validateUserID);
 
 const validateDate = (req, res, next)=>{
@@ -17,45 +16,44 @@ const validateDate = (req, res, next)=>{
 router.get("/", async (req,res) => {
     try{
         const user_id = req.user_id;
-        const {category} = req.body;
         
-        let transations;
+        // DATE
+        const min_date = req.query.min_date;
+        const max_date = req.query.max_date;
+        const min_date_is_valid = moment(min_date, "YYYY/MM/DD", true).isValid();
+        const max_date_is_valid = moment(max_date, "YYYY/MM/DD", true).isValid();
+        // CATEGORY
+        const category = req.query.category;
+        // TYPE
+        const transation_type = req.query.transation_type;
 
-        const filter = req.query.filter;
+        const query = transationModel
+        .find({user: user_id})
+        .select({name: 1, value: 1, date: 1});
         
-        switch(filter){
-            // filtra transaçoes por categoria
-            case "category":
-                if(!category) return res.status(404).json({error: "no category send"})
-                transations = await transationModel
-                .find({user: user_id, category: category})
-                .populate("category", "name isEntry")
-                .select("name value date");
-                break;
-            // filtra transaçoes por categoria de entrada
-            case "entry":
-                const entryTransations = await transationModel
-                .find({user: user_id})
-                .populate("category", "name isEntry")
-                .select("name value date");
-                transations = entryTransations.filter(transation => transation.category.isEntry);
-                break;
-            // filtra transaçoes por categoria de saida
-            case "exit":
-                const exitTransations = await transationModel
-                .find({user: user_id})
-                .populate("category", "name isEntry")
-                .select("name value date");
-                transations = exitTransations.filter(transation => !transation.category.isEntry);
-                break;
-            // pega todas transações
-            default:
-                transations = await transationModel
-                .find({user: user_id})
-                .populate("category", "name isEntry")
-                .select("name value date");
-                break;
+        // DATE FILTER
+        if(min_date_is_valid) query.find({date: {$gte: moment(min_date)}});
+        if(max_date_is_valid) query.find({date: {$lte: moment(max_date)}});
+        
+        if(category){
+            const categories = category.split(",");
+            query.populate({
+                path: "category",
+                match: {name: {$in: categories}},
+                select: {name: 1, isEntry: 1}
+            })
         }
+        if(transation_type){
+            const is_entry = transation_type === "entry";
+            query.populate({
+                path: "category", 
+                match: {isEntry: is_entry},
+                select: {name: 1, isEntry: 1}
+            })
+        }
+        const result = await query;
+        const transations = result.filter(transation => transation.category !== null);
+
         res.status(200).json(transations);
     }catch(error){
         res.status(400).json({error: "Catch: " + error})
