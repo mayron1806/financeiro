@@ -5,11 +5,12 @@ const transationModel = require("../models/transation");
 router.use(validateUserID);
 
 const validateDate = (req, res, next)=>{
-    const date = moment(req.body.date);
-    if(!date) next();
+    const date = req.body.date;
+    if(!date) return res.status(404).json({error: "Date not found"});
 
-    const current_date = moment();
-    if(date > current_date) return res.status(400).json({error: "You cannot add transactions for a date greater than today"})
+    const date_is_valid = moment(date, "YYYY/MM/DD", true).isValid();
+    if(!date_is_valid) return res.status(400).json({error: "Date format invalid"});
+
     next();
 }
 // pega transações por usuario
@@ -59,15 +60,20 @@ router.get("/", async (req,res) => {
         res.status(400).json({error: "Catch: " + error})
     }
 })
-
 // adiciona transação
-router.post("/create",validateDate, async (req,res)=>{
+router.post("/create", validateDate, async (req,res)=>{
     try{
         const user_id = req.user_id;
 
         const {name, value, category, date} = req.body;
-        if(!name || !value || !category || !date){
-            return res.status(404).json({error: "Name, value, category or date not found"});
+        
+        if(!name || !value || !category){
+            return res.status(404).json({error: "Name, value, category not found"});
+        }
+
+        const current_date = moment();
+        if(moment(date) > current_date){
+            return res.status(400).json({error: "You cannot add transations for a date after than today"});
         }
         // deixa a data com um formato padrão
         const formated_date = moment(date).format("L");
@@ -85,7 +91,6 @@ router.post("/create",validateDate, async (req,res)=>{
         res.status(400).json({error: "Catch: " + error})
     }
 })
-
 // atualiza transação
 router.put("/update", validateDate, async (req, res) => {
     try{
@@ -93,8 +98,12 @@ router.put("/update", validateDate, async (req, res) => {
         const {transation_id, name, category, value, date} = req.body;
         if(!transation_id) return res.status(404).json({error: "Transation id not found"});
 
-        if(!name && !category && !value && !date){
-            return res.status(404).json({error: "You need to send a name, category, value or date"});
+        if(!name && !category && !value){
+            return res.status(404).json({error: "You need to send a name, category or value"});
+        }
+        const current_date = moment();
+        if(moment(date) > current_date){
+            return res.status(400).json({error: "You cannot update transations for a date after than today"});
         }
         const transation = {
             name, 

@@ -3,8 +3,7 @@ const mongoose = require("../database");
 const categorySchema = mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        
+        required: true
     },
     user: {
         type: mongoose.Types.ObjectId,
