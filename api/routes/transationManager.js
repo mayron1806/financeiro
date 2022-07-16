@@ -156,11 +156,28 @@ router.patch("/schedule/update", async (req, res)=>{
         if(nameIsUsed(name, manager.scheduled_transations)){
             return res.status(409).json({error: "Name has been used"});
         }
+        
+        // pega o id de todas tarefas agendadas
+        const all_id = manager.scheduled_transations.map(st => st._id.toString());
+        // pega indice da tarefa para ser atualizada
+        const index = all_id.indexOf(transation_id);
+        if(index === -1) return res.status(404).json({error: "Transation not found"});
+        
+        
+        // atualizações
+        const new_schedule_transation = manager.scheduled_transations[index];
+        
+        if(name) new_schedule_transation.transation_model.name = name;
+        if(value) new_schedule_transation.transation_model.value = value;
+        if(category) new_schedule_transation.transation_model.category = category;
+        if(next_date) new_schedule_transation.execution.next_date = next_date;
+        if(max_executions) new_schedule_transation.execution.max = max_executions;
 
-        const all_id = manager.scheduled_transations.map(st => typeof(st._id));
-        const index = all_id.indexOf(mongoose.Types.ObjectId(transation_id));
+        manager.scheduled_transations[index] = new_schedule_transation;
 
-        res.status(200).json(index);
+        const updated_manager = await manager.save();
+
+        res.status(200).json(updated_manager);
     }catch(error){
         res.status(400).json({error: "Catch: " + error});
     }
