@@ -47,7 +47,7 @@ router.get("/", async(req, res) => {
 })
 // POST =======================================================================================
 // cria uma nova categoria
-router.post("/create", validateCategoryName, async(req, res) => {
+router.post("/", validateCategoryName, async(req, res) => {
     try{
         const user_id = req.user_id;
         const {name, is_entry} = req.body;
@@ -66,7 +66,7 @@ router.post("/create", validateCategoryName, async(req, res) => {
 
 // PUT =======================================================================================
 // atualiza uma categoria
-router.put("/update",validateCategoryName, async (req, res)=>{
+router.put("/",validateCategoryName, async (req, res)=>{
     try{
         const user_id = req.user_id;
 
@@ -88,19 +88,18 @@ router.put("/update",validateCategoryName, async (req, res)=>{
 })
 
 // DELETE =======================================================================================
-// deleta uma categoria
-router.delete("/delete", async(req, res) => {
+// deleta categoria
+router.delete("/", async(req, res) => {
     try{
         const user_id = req.user_id;
-        const {category_id} = req.body;
+        const {categories} = req.body;
 
-        if(!category_id) return res.status(404).json({error:"Category id not found"});
-       
-        const category = await categoryModel
-            .findOneAndDelete({_id: category_id, user: user_id});
+        if(!categories || categories.length == 0){
+            return res.status(404).json({error:"Categories not found"});
+        }
+        const deleted = await categoryModel.deleteMany({_id: {$in: categories}, user: user_id});
         
-        if(!category) return res.status(404).json({error: "Category not found"});
-        res.status(200);
+        res.status(200).json(deleted);
     }
     catch(error){
         res.status(400).json({error: "Catch: " + error})

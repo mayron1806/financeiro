@@ -61,7 +61,7 @@ router.get("/", async (req,res) => {
     }
 })
 // adiciona transação
-router.post("/create", validateDate, async (req,res)=>{
+router.post("/", validateDate, async (req,res)=>{
     try{
         const user_id = req.user_id;
 
@@ -92,7 +92,7 @@ router.post("/create", validateDate, async (req,res)=>{
     }
 })
 // atualiza transação
-router.put("/update", validateDate, async (req, res) => {
+router.put("/", validateDate, async (req, res) => {
     try{
         const user_id = req.user_id;
         const {transation_id, name, category, value, date} = req.body;
@@ -120,17 +120,16 @@ router.put("/update", validateDate, async (req, res) => {
     }
 })
 // deleta transação
-router.delete("/delete", async (req, res) => {
+router.delete("/", async (req, res) => {
     try{
         const user_id = req.user_id;
-        const {transation_id} = req.body;
-        if(!transation_id) return res.status(404).json({error: "Transation id not found"});
-        const deleted_transation = await transationModel
-            .findOneAndDelete({_id: transation_id, user: user_id});
+        const { transations } = req.body;
+        if(!transations || transations.length == 0){
+            return res.status(404).json({error: "Transations not found"});
+        }
+        const deleted = await transationModel.deleteMany({_id: {$in: transations}, user: user_id});
 
-        if(!deleted_transation) return res.status(404).json({error: "Transation not found"})
-
-        res.status(200).json(deleted_transation);
+        res.status(200).json(deleted);
     }catch(error){
         res.status(400).json({error: "Catch: " + error})
     }

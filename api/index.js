@@ -16,7 +16,7 @@ app.use("/api/category", categoryRoutes);
 const transationRoutes = require("./routes/transation");
 app.use("/api/transation", transationRoutes);
 
-const transationManagerRoutes = require("./routes/transationManager");
-app.use("/api/manager", transationManagerRoutes);
+const scheduleRoutes = require("./routes/schedule");
+app.use("/api/schedule", scheduleRoutes);
 
 app.listen(port, ()=> {console.log("Server on http://localhost:" + port)})
