@@ -1,15 +1,39 @@
-import { useState } from "react";
-import InputPassword from "../../../components/input/password";
-import InputText from "../../../components/input/text";
+import { Dispatch, FormEvent, useEffect, useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Submit from "../../../components/submit";
 
 import "../style.css";
 
 const SignIn = () => {
   const [name, setName] = useState<string>("");
+  
   const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassowrd] = useState<boolean>(false);
 
-  const [error, setError] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const sendForm = (e: FormEvent) => {
+    e.preventDefault();
+    if(name.length < 5 || name.length > 15){
+      return setErrorMessage("O nome deve ter entre 5 e 15 caracteres.");
+    }
+    if(password.length < 5 || password.length > 20){
+      return setErrorMessage("A senha deve ter entre 5 e 20 caracteres.");
+    }
+    // entra na conta
+  }
+
+  useEffect(()=>{
+    setErrorMessage("");
+  }, [name, password])
+
+  const renderEye = (show: boolean, setShow: Dispatch<React.SetStateAction<boolean>>) => {
+    return (
+      <div onClick={()=> setShow(!show)}>
+        { show && <AiOutlineEye /> || <AiOutlineEyeInvisible /> }
+      </div>
+    ) 
+  }
   return(
     <div className="container">
       <main>
@@ -17,28 +41,34 @@ const SignIn = () => {
           <h1 className="title">FINANCEIRO</h1>
           <p>Bem vindo de volta!</p>
         </div>
-        <form>
-          <InputText 
-            name="Nome" 
-            value={name} 
-            setValue={setName}
-            required
-            setErrorMessage={setError}
-          />
-          <InputPassword 
-            name="Senha" 
-            value={password} 
-            setValue={setPassword}
-            required
-            setErrorMessage={setError}
-          />
-          <Submit value="Entrar"/>
+        <form onSubmit={(e)=> sendForm(e)}>
+          <div className="input">
+            <label htmlFor="name">Nome</label>
+            <input 
+              type="text" 
+              value={name} 
+              onChange={(e)=> setName(e.target.value)} 
+              id="name"
+            />
+          </div>
+          <div className="input">
+            <label htmlFor="name">Senha</label>
+            <input 
+              type={showPassword ? "text" : "password"}
+              value={password} 
+              onChange={(e)=> setPassword(e.target.value)} 
+              id="name"
+              autoComplete="off"
+            />
+            {renderEye(showPassword, setShowPassowrd)}
+          </div>
           {
-            error.length > 0 &&
-            <p className="error-message">{error}</p>
+            errorMessage.length > 0 &&
+            <p className="error-message">{errorMessage}</p>
           }
+          <Submit value="Criar conta"/>
         </form>
-        <p className="link">Ainda não possui uma conta? <a href="/signup">Criar conta</a></p>
+        <p className="link">Ainda não tem uma conta? <a href="/signup">Criar agora</a></p>
       </main>
     </div>
   )

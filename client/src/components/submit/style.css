@@ -7,4 +7,5 @@ input.submit{
   border: 0;
   font-weight: 500;
   cursor: pointer;
+  color: var(--white);
 }

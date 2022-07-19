@@ -14,6 +14,7 @@ main{
   background-color: var(--black-light);
   border-radius: 5px;
 }
+/* HEAD */
 div.head{
   padding: 1rem 0;
 }
@@ -29,6 +30,7 @@ p{
   color: var(--gray);
   text-align: center;
 }
+/* FORM */
 form{
   display: flex;
   flex-direction: column;
@@ -36,6 +38,7 @@ form{
   margin: 2rem 0;
   margin-bottom: 5rem;
 }
+/* LINKS */
 .link{
   color: var(--white); 
 }
@@ -43,7 +46,38 @@ form{
   color: var(--blue);
   text-decoration: underline;
 }
+/* ERROR */
 .error-message{
   font-size: 1.6rem;
   color: var(--red);
+}
+/* INPUTS */
+.input{
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  position: relative;
+}
+.input label{
+  font-size: 2rem;
+  color: var(--white);
+}
+.input input{
+  padding: 0.7rem;
+  font-size: 2rem;
+  color: var(--white);
+  background-color: transparent;
+  border: 1px solid var(--white);
+  border-radius: 2px; 
+  width: 100%;
+}
+.input svg{
+  position: absolute;
+  right: 0;
+  margin-right: 10px;
+  bottom: 0;
+  margin-bottom: 1.5rem;
+  font-size: 3rem;
+  color: var(--gray);
+  cursor: pointer;
 }
