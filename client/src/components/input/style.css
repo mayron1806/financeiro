@@ -1,0 +1,25 @@
+div{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+label{
+  display: block;
+  color: var(--white);
+  font-size: 2rem;
+  font-weight: 400;
+}
+input{
+  width: 100%;
+  padding: 0.7rem;
+  font-size: 2rem;
+  border-radius: 0.2rem;
+  background-color: var(--black-ligth);
+  border: 1px solid var(--white);
+  color: var(--white);
+  transition: 0.3s;
+}
+input:active, input:focus {
+  border-color: var(--blue);
+}

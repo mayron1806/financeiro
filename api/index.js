@@ -5,6 +5,8 @@ const port = 8080;
 // middlewares
 const body_parser = require("body-parser");
 app.use(body_parser.json());
+const cors = require("cors");
+app.use(cors());
 
 // rotas 
 const userRoutes = require("./routes/user");

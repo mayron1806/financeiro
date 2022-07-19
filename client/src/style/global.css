@@ -1,0 +1,25 @@
+*{
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  outline: none;
+}
+html{
+  /*font-family: 'Oswald', sans-serif;*/
+  font-family: 'Roboto', sans-serif;
+  font-size: 62.5%;
+}
+:root{
+  --black: #151515;
+  --black-light: #202020;
+  --white: #EDEDED;
+  --blue: #3E8AFD;
+  --red: #F82222;
+  --green: #22F844;
+  --gray: #737373;
+}
+body{
+  background-color: var(--black-light);
+}

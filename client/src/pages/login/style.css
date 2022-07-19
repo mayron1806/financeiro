@@ -1,0 +1,49 @@
+.container{
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--blue);
+}
+main{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: max(300px, 40vw);
+  padding: 2rem;
+  background-color: var(--black-light);
+  border-radius: 5px;
+}
+div.head{
+  padding: 1rem 0;
+}
+h1.title{
+  font-family: 'Oswald', sans-serif;
+  color: var(--white);
+  font-weight: 500;
+  text-align: center;
+  font-size: 3rem;
+}
+p{
+  font-size: 2rem;
+  color: var(--gray);
+  text-align: center;
+}
+form{
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin: 2rem 0;
+  margin-bottom: 5rem;
+}
+.link{
+  color: var(--white); 
+}
+.link a{
+  color: var(--blue);
+  text-decoration: underline;
+}
+.error-message{
+  font-size: 1.6rem;
+  color: var(--red);
+}
