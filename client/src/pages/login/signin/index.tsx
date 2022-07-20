@@ -1,10 +1,14 @@
 import { Dispatch, FormEvent, useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useLocation, useNavigate } from "react-router-dom";
 import Submit from "../../../components/submit";
+import useAuth from "../../../hooks/useAuth";
 
 import "../style.css";
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const {signIn} = useAuth();
   const [name, setName] = useState<string>("");
   
   const [password, setPassword] = useState<string>("");
@@ -20,7 +24,16 @@ const SignIn = () => {
     if(password.length < 5 || password.length > 20){
       return setErrorMessage("A senha deve ter entre 5 e 20 caracteres.");
     }
-    // entra na conta
+    const login = async ()=>{
+      const res = await signIn(name, password);
+      
+      if(res.status !== 200){
+        return setErrorMessage(res.message);
+      }
+      navigate("/", {replace: true});
+      console.log(res);
+    }
+    login();
   }
 
   useEffect(()=>{
@@ -57,7 +70,7 @@ const SignIn = () => {
               type={showPassword ? "text" : "password"}
               value={password} 
               onChange={(e)=> setPassword(e.target.value)} 
-              id="name"
+              id="password"
               autoComplete="off"
             />
             {renderEye(showPassword, setShowPassowrd)}

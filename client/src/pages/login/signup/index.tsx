@@ -2,8 +2,14 @@ import React, { Dispatch, FormEvent, useEffect, useState } from "react";
 import Submit from "../../../components/submit";
 import {AiOutlineEyeInvisible, AiOutlineEye} from "react-icons/ai";
 import "../style.css";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../../../hooks/useAuth";
 
 const SignUp = () => {
+  const { signUp } = useAuth();
+
+  const navigate = useNavigate();
+
   const [name, setName] = useState<string>("");
   
   const [password, setPassword] = useState<string>("");
@@ -13,6 +19,7 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassowrd] = useState<boolean>(false);
 
   const [errorMessage, setErrorMessage] = useState<string>("");
+
   const sendForm = (e: FormEvent) => {
     e.preventDefault();
     if(name.length < 5 || name.length > 15){
@@ -25,6 +32,14 @@ const SignUp = () => {
       return setErrorMessage("As senhas não coincidem.");
     }
     // cria conta
+    const signup = async ()=>{
+      const res = await signUp(name, password);
+      if(res.status !== 201){
+        return setErrorMessage(res.message);
+      }
+      navigate("/", {replace: true});
+    }
+    signup();
   }
   useEffect(()=>{
     setErrorMessage("");

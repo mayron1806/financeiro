@@ -1,17 +1,16 @@
 import { Navigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 type props = {
     children: JSX.Element,
     redirectUrl?: string
 }
 const PageProtector = ({children, redirectUrl = "/signin"}: props) => {
-    // verifica se esta logado
-    const is_authenticated = false;
+    const { isAuthenticated } = useAuth();
 
-    if(!is_authenticated){
+    if(!isAuthenticated){
         return <Navigate to={redirectUrl}/>
     }
-    
     return (
         <div>
             {children}
