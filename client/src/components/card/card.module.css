@@ -1,0 +1,33 @@
+.container{
+  width: 100%;
+  padding: 2rem;
+  border-radius: 25px;
+  font-size: 2rem;
+  color: var(--white);
+  background-color: var(--black);
+  box-shadow: 0 0 10px var(--black);
+  text-align: center;
+  transition: 0.3s;
+}
+.container:hover{
+  background-color: var(--blue);
+  
+}
+.title{
+  color: var(--gray);
+}
+.content{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--blue);
+  font-size: 3.5rem;
+  transition: 0.3s;
+}
+.container:hover .content{
+  color: var(--white);
+}
+.content svg{
+  font-size: 6rem;
+}

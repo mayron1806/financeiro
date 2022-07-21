@@ -1,7 +1,7 @@
 import React, { Dispatch, FormEvent, useEffect, useState } from "react";
 import Submit from "../../../components/submit";
 import {AiOutlineEyeInvisible, AiOutlineEye} from "react-icons/ai";
-import "../style.css";
+import styles from "../auth.module.css";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 
@@ -37,7 +37,7 @@ const SignUp = () => {
       if(res.status !== 201){
         return setErrorMessage(res.message);
       }
-      navigate("/", {replace: true});
+      navigate("/home", {replace: true});
     }
     signup();
   }
@@ -52,14 +52,14 @@ const SignUp = () => {
     ) 
   }
   return(
-    <div className="container">
-      <main>
-        <div className="head">
-          <h1 className="title">FINANCEIRO</h1>
-          <p>Bem vindo ao financeiro!</p>
+    <div className={styles.container}>
+      <main className={styles.main}>
+        <div className={styles.head}>
+          <h1 className={styles.title}>FINANCEIRO</h1>
+          <p className={styles.sub_title}>Bem vindo ao financeiro!</p>
         </div>
         <form onSubmit={(e)=> sendForm(e)}>
-          <div className="input">
+          <div className={styles.input}>
             <label htmlFor="name">Nome</label>
             <input 
               type="text" 
@@ -68,35 +68,35 @@ const SignUp = () => {
               id="name"
             />
           </div>
-          <div className="input">
-            <label htmlFor="name">Senha</label>
+          <div className={styles.input}>
+            <label htmlFor="password">Senha</label>
             <input 
               type={showPassword ? "text" : "password"}
               value={password} 
               onChange={(e)=> setPassword(e.target.value)} 
-              id="name"
+              id="password"
               autoComplete="off"
             />
             {renderEye(showPassword, setShowPassowrd)}
           </div>
-          <div className="input">
-            <label htmlFor="name">Confirmar senha</label>
+          <div className={styles.input}>
+            <label htmlFor="confirm-password">Confirmar senha</label>
             <input 
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword} 
               onChange={(e)=> setConfirmPassword(e.target.value)} 
-              id="name"
+              id="confirm-password"
               autoComplete="off"
             />
             {renderEye(showConfirmPassword, setShowConfirmPassowrd)}
           </div>
           {
             errorMessage.length > 0 &&
-            <p className="error-message">{errorMessage}</p>
+            <p className={styles.error_message}>{errorMessage}</p>
           }
           <Submit value="Criar conta"/>
         </form>
-        <p className="link">Já possui uma conta? <a href="/signin">Entrar</a></p>
+        <p className={styles.link}>Já possui uma conta? <a href="/signin">Entrar</a></p>
       </main>
     </div>
   )

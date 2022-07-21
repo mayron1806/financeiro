@@ -1,10 +1,11 @@
 import { Dispatch, FormEvent, useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Submit from "../../../components/submit";
 import useAuth from "../../../hooks/useAuth";
 
-import "../style.css";
+import styles from "../auth.module.css";
+
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const SignIn = () => {
       if(res.status !== 200){
         return setErrorMessage(res.message);
       }
-      navigate("/", {replace: true});
+      navigate("/home", {replace: true});
       console.log(res);
     }
     login();
@@ -48,14 +49,14 @@ const SignIn = () => {
     ) 
   }
   return(
-    <div className="container">
-      <main>
-        <div className="head">
-          <h1 className="title">FINANCEIRO</h1>
-          <p>Bem vindo de volta!</p>
+    <div className={styles.container}>
+      <main className={styles.main}>
+        <div className={styles.head}>
+          <h1 className={styles.title}>FINANCEIRO</h1>
+          <p className={styles.sub_title}>Bem vindo de volta!</p>
         </div>
         <form onSubmit={(e)=> sendForm(e)}>
-          <div className="input">
+          <div className={styles.input}>
             <label htmlFor="name">Nome</label>
             <input 
               type="text" 
@@ -64,7 +65,7 @@ const SignIn = () => {
               id="name"
             />
           </div>
-          <div className="input">
+          <div className={styles.input}>
             <label htmlFor="name">Senha</label>
             <input 
               type={showPassword ? "text" : "password"}
@@ -77,11 +78,11 @@ const SignIn = () => {
           </div>
           {
             errorMessage.length > 0 &&
-            <p className="error-message">{errorMessage}</p>
+            <p className={styles.error_message}>{errorMessage}</p>
           }
-          <Submit value="Criar conta"/>
+          <Submit value="Entrar"/>
         </form>
-        <p className="link">Ainda não tem uma conta? <a href="/signup">Criar agora</a></p>
+        <p className={styles.link}>Ainda não tem uma conta? <a href="/signup">Criar agora</a></p>
       </main>
     </div>
   )

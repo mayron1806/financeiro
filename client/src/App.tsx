@@ -1,6 +1,6 @@
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import { AuthProvider } from "./context/auth";
-import Home from "./pages/home";
+import System from "./pages/system";
 import SignIn from './pages/login/signin';
 import SignUp from './pages/login/signup';
 import PageProtector from './pages/pageProtector';
@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route path='/signin' element={<SignIn />}/>
           <Route path='/signup' element={<SignUp/>}/>
-          <Route path='/' element={<PageProtector><Home /></PageProtector>}/>
+          <Route path='/:tab/' element={<PageProtector><System /></PageProtector>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

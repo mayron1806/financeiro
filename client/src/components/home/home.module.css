@@ -1,0 +1,57 @@
+.content{
+  padding: 2rem;
+}
+.cards{
+  display: flex;
+  gap: 4rem;
+}
+.transations{
+  margin-top: 2rem;
+}
+.head{
+  display: flex;
+  justify-content: space-between;
+  color: var(--blue);
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+.head h3{
+  font-weight: 500;
+}
+/* TABLE*/
+.table_container{
+  height: 350px;
+  overflow-y: auto;
+}
+.table{
+  color: var(--white);
+  width: 100%;
+  font-size: 1.6rem;
+}
+/* TABLE HEAD*/
+.table thead{
+  position: sticky;
+  top: 0;
+  background-color: var(--black-light);
+  font-size: 2rem;
+}
+.table thead th{
+  font-weight: 500;
+  padding-bottom: 5px;
+}
+/* TABLE BODY*/
+.table tbody{
+  text-align: center;
+}
+.table tr .category{
+  background-color: var(--blue);
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+.table tr .icon{
+  font-size: 2rem;
+  text-align: right;
+} 
+.table tr .icon svg{
+  cursor: pointer;
+}

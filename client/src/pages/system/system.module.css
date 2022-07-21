@@ -1,0 +1,7 @@
+.container{
+  display: grid;
+  grid-template-columns: minmax(250px, 25vw) 1fr;
+} 
+.content{
+  background-color: var(--black-light);
+}
