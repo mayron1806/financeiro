@@ -3,15 +3,11 @@ import {FiLogOut} from "react-icons/fi";
 import {AiFillHome, AiFillSchedule} from "react-icons/ai";
 import {MdOutlineAttachMoney, MdCategory} from "react-icons/md";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 
 type props = {
   tab: string | undefined
 }
 const SideBar = ({ tab }: props) => {
-  useEffect(()=>{
-    console.log(tab);
-  })
   const isActiveMenu = (name: string) => {
     if(name === tab) return styles.active;
   }

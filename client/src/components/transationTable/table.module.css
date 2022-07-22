@@ -1,25 +1,4 @@
-.content{
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-/* CARDS */
-.cards{
-  display: flex;
-  gap: 4rem;
-}
-/* TRANSATIONS HEAD*/
-.head{
-  display: flex;
-  justify-content: space-between;
-  color: var(--blue);
-  font-size: 2rem;
-  margin-bottom: 2rem;
-}
-.head h3{
-  font-weight: 500;
-}
+
 /* TABLE*/
 .table{
   color: var(--white);
@@ -50,4 +29,15 @@
 } 
 .table tr .icon svg{
   cursor: pointer;
+}
+.no_transations{
+  margin: 4rem 0;
+  font-size: 1.6rem;
+  width: 100%;
+  text-align: center;
+  color: var(--white);
+}
+.no_transations svg{
+  font-size: 5rem;
+  margin-bottom: 2rem;
 }

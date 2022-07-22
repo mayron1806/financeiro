@@ -4,4 +4,6 @@
 } 
 .content{
   background-color: var(--black-light);
+  overflow: auto;
+  max-height: 100vh;
 }

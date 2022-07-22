@@ -1,0 +1,18 @@
+.container{
+  display: flex;
+  justify-content: space-between;
+  font-size: 2rem;
+  color: var(--white);
+}
+.container > span{
+  color: var(--gray);
+  font-size: 2.5rem;
+}
+.sum{
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.money{
+  font-size: 2.5rem;
+}

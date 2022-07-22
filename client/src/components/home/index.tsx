@@ -1,12 +1,17 @@
 import Card from "../card";
 import Header from "../header";
-import {GiMoneyStack} from "react-icons/gi";
-import {BiCalendar, BiEdit} from "react-icons/bi";
-import {AiOutlineClose} from "react-icons/ai";
+import { GiMoneyStack } from "react-icons/gi";
+import { BiCalendar } from "react-icons/bi";
+import { MdMoneyOffCsred } from "react-icons/md";
 import styles from "./home.module.css";
 import Select, { CSSObjectWithLabel } from "react-select";
-import { useState } from "react";
-import { formatColorNegativeNumber, formatMoney } from "../../utils/format";
+import { useEffect, useState } from "react";
+import TransationCount from "../transationCount";
+import TransationTable from "../transationTable";
+import useTransation from "../../hooks/useTransation";
+import TransationType from "../../types/transation";
+import useAuth from "../../hooks/useAuth";
+import moment from "moment";
 
 // filter options
 const options = [
@@ -31,21 +36,66 @@ const selectStyle = {
   })
 }
 
+const getTransationsSum = (transations: TransationType[]) => {
+  let sum = 0;
+  transations.forEach(transation => {
+    sum += transation.value;
+  });
+  return sum;
+}
+
 const Home = () => {
+  const { authContext } = useAuth();
+  const { getAllTransations, getFilteredTransations } = useTransation(authContext.user?.id); 
+
+  // todas transações
+  const [allTransations, setAllTransations] = useState<TransationType[]>([]);
+  useEffect(()=>{
+    getAllTransations()
+    .then(res => {
+      setAllTransations(res);
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+  }, []);
+  
+  // transações filtradas
+  const [filteredTransations, setFilteredTransations] = useState<TransationType[]>([]);
   const [transationFilter, setTransationFilter] = useState<number | undefined>(7);
+  useEffect(()=>{
+    getFilteredTransations({min_date: moment().subtract(transationFilter, "days").toDate()})
+    .then(res => {
+      setFilteredTransations(res);
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+  }, [filteredTransations]);
+
+  const entry_sum = getTransationsSum(allTransations.filter(t=> t.category.isEntry));
+  const exit_sum = getTransationsSum(allTransations.filter(t=> !t.category.isEntry));
+  const total = entry_sum + exit_sum;
+
   return(
-    <div>
+    <div className={styles.container}>
       <Header title="Inicio"/>
       <div className={styles.content}>
+        {/* CARDS */}
         <div className={styles.cards}>
-          <Card money={1000.02} title={"Balanço total"}>
+          <Card money={entry_sum} title={"Entradas"}>
             <GiMoneyStack />
           </Card>
-          <Card money={-1000.02} title={"Balanço mensal"}>
+          <Card money={exit_sum} title={"Saidas"}>
+            <MdMoneyOffCsred />
+          </Card>
+          <Card money={total} title={"Total"}>
             <BiCalendar />
           </Card>
         </div>
-        <div className={styles.transations}>
+        {/* END CARDS */}
+        {/* TRANSATIONS TABLE */}
+        <div>
           <div className={styles.head}>
             <h3>Transações</h3>
             <Select 
@@ -55,236 +105,15 @@ const Home = () => {
               styles={selectStyle}
             />
           </div>
-          <div className={styles.table_container}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th style={{textAlign: "left"}}>Nome</th>
-                  <th>Valor</th>
-                  <th>Categoria</th>
-                  <th>Data da transação</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-                <tr>
-                  <td style={{textAlign: "left"}}>Transação 1</td>
-                  <td style={formatColorNegativeNumber(-500)}>
-                    {formatMoney(-500)}
-                  </td>
-                  <td>
-                    <span className={styles.category}>
-                      Categoria 1
-                    </span>
-                  </td>
-                  <td>20/07/2022</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
-                </tr>
-              </tbody>
-            </table>
+          <div className={styles.table_container} >
+           <TransationTable transatios={filteredTransations} />
           </div>
-          
         </div>
+        {/* END TRANSATIONS TABLE */}
+        {/* TRANSATIONS COUNT */}
+        <TransationCount transations={filteredTransations}/>
+        {/* END TRANSATIONS COUNT */}
       </div>
-      
     </div>
   )
 }

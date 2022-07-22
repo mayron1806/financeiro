@@ -29,7 +29,6 @@ const System = () => {
       <main className={styles.content}>
         {renderScreen()}
       </main>
-      
     </div>
   )
 }

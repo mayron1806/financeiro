@@ -15,8 +15,12 @@ const useAuth = ()=> {
   const signIn = async (name: string, password: string) => {
     let res : authResult = {} as authResult;
     try{
-      const result = await client.post<UserType>("/user/signin", { name, password });
-      authContext.setUser(result.data);
+      const result = await client.post("/user/signin", { name, password });
+      const user: UserType = {
+        name: result.data.name,
+        id: result.data._id
+      }
+      authContext.setUser(user);
       res.status = result.status;
       setIsAuthenticated(true);
     }
@@ -44,8 +48,12 @@ const useAuth = ()=> {
   const signUp = async (name: string, password: string) => {
     let res : authResult = {} as authResult;
     try{
-      const result = await client.post<UserType>("/user/signup", { name, password });
-      authContext.setUser(result.data);
+      const result = await client.post("/user/signup", { name, password });
+      const user: UserType = {
+        name: result.data.name,
+        id: result.data._id
+      }
+      authContext.setUser(user);
       res.status = result.status;
       setIsAuthenticated(true);
     }
@@ -72,6 +80,6 @@ const useAuth = ()=> {
     authContext.setUser(null);
     setIsAuthenticated(false);
   }
-  return {signIn, signUp, signOut, isAuthenticated}
+  return {authContext, signIn, signUp, signOut, isAuthenticated}
 }
 export default useAuth;

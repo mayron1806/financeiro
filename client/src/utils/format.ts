@@ -1,6 +1,7 @@
 export const formatMoney = (value: number) => {
-  return value.toLocaleString("pt-br", {style: "currency", currency: "BRL"});
+  let formated =  value.toLocaleString("pt-br", {style: "currency", currency: "BRL"});
+  return formated;
 }
-export const formatColorNegativeNumber = (value: number) => {
-   return value < 0 ? {color: "var(--red)"} : {color: "var(--green)"}
+export const formatColorNumbers = (value: number) => {
+  return value >= 0  ? {color: "var(--green)"} : {color: "var(--red)"};
 }

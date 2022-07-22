@@ -1,6 +1,6 @@
 import styles from "./card.module.css";
 import {
-  formatColorNegativeNumber, 
+  formatColorNumbers, 
   formatMoney
 } from "../../utils/format";
 
@@ -18,7 +18,7 @@ const Card = ({title, money, children}: props) => {
         {children}
         <p 
           className={styles.money} 
-          style={formatColorNegativeNumber(money)}
+          style={formatColorNumbers(money)}
         >{formatMoney(money)}</p>
       </div>
     </div>

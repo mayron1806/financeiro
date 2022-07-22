@@ -7,30 +7,30 @@ router.post("/signin", async(req,res)=>{
     try{
         const {name, password} = req.body;
         if(!name || !password){
-            return res.status(400).json({error: "Name or password is null"});
+            return res.status(400).json("Name or password is null");
         }
 
         // pega usuario pelo nome
         const user = await userModel.findOne({name: name});
         if(!user){
-            return res.status(404).json({error: "User not found"});
+            return res.status(404).json("User not found");
         }
         // compara senhas
         const isEquals = await bcrypt.compare(password.toString(), user.password);
         if(!isEquals){
-            return res.status(400).json({error: "Incorrect password"});
+            return res.status(400).json("Incorrect password");
         }
-        return res.status(200).json({user: user});
+        return res.status(200).json(user);
     }
     catch(err){
-        return res.status(400).json({error: "Catch: " + err});
+        return res.status(400).json("Catch: " + err);
     }
 })
 router.post("/signup", async(req,res)=>{
     try{
         const {name, password} = req.body;
         if(!name || !password){
-            return res.status(400).json({error: "Name or password is null"});
+            return res.status(400).json("Name or password is null");
         }
 
         // hash password
@@ -45,7 +45,7 @@ router.post("/signup", async(req,res)=>{
         return res.status(201).json({user: new_user});
     }
     catch(err){
-        return res.status(400).json({error: "Catch: " + err});
+        return res.status(400).json("Catch: " + err);
     }
 })
 
