@@ -1,10 +1,9 @@
+import CategoryType from "./category";
+
 type TransationType = {
   name: string,
   value: number,
-  category: {
-    name: string,
-    isEntry: boolean
-  }
+  category: CategoryType
   date: Date
 }
 export default TransationType;

@@ -32,7 +32,7 @@ router.get("/", async (req,res) => {
 
     const query = transationModel
     .find({user: user_id})
-    .populate({path: "category", select: {name: 1, isEntry: 1}})
+    .populate({path: "category", select: {name: 1, is_entry: 1}})
     .select({name: 1, value: 1, date: 1, category: 1});
     
     // DATE FILTER
@@ -44,7 +44,7 @@ router.get("/", async (req,res) => {
       query.populate({
         path: "category",
         match: {name: {$in: categories}},
-        select: {name: 1, isEntry: 1}
+        select: {name: 1, is_entry: 1}
       })
     }
 
@@ -52,8 +52,8 @@ router.get("/", async (req,res) => {
     if(typeof(entry_transations) === "boolean"){
       query.populate({
         path: "category", 
-        match: {isEntry: entry_transations},
-        select: {name: 1, isEntry: 1}
+        match: {is_entry: entry_transations},
+        select: {name: 1, is_entry: 1}
       })
     }
     const result = await query;
@@ -86,7 +86,7 @@ router.post("/", validateDate, async (req,res)=>{
       if(!category_db) return res.status(404).json("Category not found");
 
       // formata o valor da transação para o tipo da categoria
-      const formated_value = category_db.isEntry ? Math.abs(value) : -Math.abs(value);
+      const formated_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
 
       const transation = {
         name,
@@ -120,7 +120,7 @@ router.put("/", validateDate, async (req, res) => {
       if(!category_db) return res.status(404).json("Category not found");
 
       // formata o valor da transação para o tipo da categoria
-      const formated_value = category_db.isEntry ? Math.abs(value) : -Math.abs(value);
+      const formated_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
 
       const transation = {
         name, 

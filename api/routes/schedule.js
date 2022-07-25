@@ -31,7 +31,7 @@ router.get("/", async (req, res)=>{
 
         const schedules = await scheduleModel
         .find({user: user_id})
-        .populate("category", "name isEntry")
+        .populate("category", "name is_entry")
         .select({__v : 0});
 
         res.status(200).json(schedules);

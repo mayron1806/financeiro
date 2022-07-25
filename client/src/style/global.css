@@ -19,6 +19,7 @@ html{
   --red: #F82222;
   --green: #22F844;
   --gray: #737373;
+  --yellow: #EAEB09;
 }
 body{
   background-color: var(--black-light);

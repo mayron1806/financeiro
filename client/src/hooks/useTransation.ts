@@ -1,6 +1,4 @@
 import axios from "axios";
-import moment from "moment";
-import { useState } from "react";
 import * as transationsAPI from "../services/transations";
 import TransationType from "../types/transation";
 import TransationFilterType from "../types/transationFilter";
@@ -53,7 +51,10 @@ const useTransation = (user_id: string | undefined )=>{
     }
     return transations;
   }
-  
-  return { getAllTransations, getFilteredTransations };
+  const createTransation = async (transation: TransationType) => {
+
+  }
+
+  return { getAllTransations, getFilteredTransations, createTransation };
 }
 export default useTransation;

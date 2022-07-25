@@ -16,8 +16,8 @@ const getTransationsSum = (transations: TransationType[]) => {
 }
 
 const TransationCount = ({transations}: props) => {
-  const entry_sum = getTransationsSum(transations.filter(t=> t.category.isEntry));
-  const exit_sum = getTransationsSum(transations.filter(t=> !t.category.isEntry));
+  const entry_sum = getTransationsSum(transations.filter(t=> t.category.is_entry));
+  const exit_sum = getTransationsSum(transations.filter(t=> !t.category.is_entry));
 
   const total = entry_sum + exit_sum;
 

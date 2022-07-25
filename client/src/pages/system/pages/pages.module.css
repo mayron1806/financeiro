@@ -1,0 +1,33 @@
+.content{
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+/* HEAD */
+.head{
+  display: flex;
+  justify-content: space-between;
+  color: var(--blue);
+  font-size: 2rem;
+}
+.head h3{
+  font-weight: 500;
+}
+/* BUTTON*/
+.button{
+  padding: 1rem 2rem;
+  font-size: 2rem;
+  border-radius: 5px;
+  background-color: var(--green);
+  color: var(--white);
+  display: flex; 
+  gap: 1rem;
+  cursor: pointer;
+}
+.button svg{
+  font-size: 2.5rem;
+}
+.button:hover{
+  filter: brightness(1.5);
+}

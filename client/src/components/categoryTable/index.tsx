@@ -1,45 +1,40 @@
 import styles from "./table.module.css";
-import TransationType from "../../types/transation";
 import { formatColorNumbers, formatMoney } from "../../utils/format";
 import { BiEdit } from "react-icons/bi";
 import { BsSafe } from "react-icons/bs";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment";
+import CategoryType from "../../types/category";
 
 type props = {
-  transatios: TransationType[]
+  categories: CategoryType[]
 }
-const TransationTable = ({transatios}: props) => {
+const CategoryTable = ({categories}: props) => {
   return(
     <div>
       <table className={styles.table}>
         <thead>
           <tr>
             <th style={{textAlign: "left"}}>Nome</th>
-            <th>Valor</th>
-            <th>Categoria</th>
-            <th>Data da transação</th>
+            <th>Tipo</th>
+            <th>Cor</th>
             <th></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {
-            transatios.map((transation, index) =>{
-              const {name, category, date, value} = transation;
+            categories.map(category =>{
+              const {name, is_entry, color} = category;
               return(
-                <tr key={index}>
+                <tr key={name}>
                   <td style={{textAlign: "left"}}>{name}</td>
-                  <td style={formatColorNumbers(value)}>
-                    {formatMoney(value)}
+                  <td>{is_entry ? "Entrada" : "Saida"}</td>
+                  <td className={styles.color} >
+                    <div 
+                      className={styles.color} 
+                      style={{backgroundColor: color}}></div>
                   </td>
-                  <td>
-                    <span 
-                      className={styles.category} 
-                      style={{backgroundColor: category.color}}
-                    >{category.name}</span>
-                  </td>
-                  <td>{moment(date).format("DD/MM/YYYY")}</td>
                   <td className={styles.icon}><BiEdit /></td>
                   <td className={styles.icon}><AiOutlineClose /></td>
                 </tr>
@@ -49,14 +44,14 @@ const TransationTable = ({transatios}: props) => {
         </tbody>
       </table>
         {
-          transatios.length < 1 &&
-          <div className={styles.no_transations}>
+          categories.length < 1 &&
+          <div className={styles.no_category}>
             <BsSafe />
-            <p>Não há categorias neste periodo.</p>
+            <p>Não há transações neste periodo.</p>
           </div>
         }
     </div>
     
   )
 }
-export default TransationTable;
+export default CategoryTable;

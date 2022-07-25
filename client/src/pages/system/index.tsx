@@ -1,7 +1,9 @@
 import { useParams } from "react-router-dom";
-import Home from "../../components/home";
+import Category from "./pages/category";
+import Home from "./pages/home";
 import SideBar from "../../components/sidebar";
 import styles from "./system.module.css";
+import Transations from "./pages/transations";
 const System = () => {
   const { tab } = useParams();
 
@@ -11,16 +13,16 @@ const System = () => {
         return (<Home />);
 
       case "transations":
-        return (<div></div>);
+        return (<Transations />);
 
       case "schedule":
         return (<div></div>);
 
       case "category":
-        return (<div></div>);
+        return (<Category />);
 
       default:
-        return (<div></div>);
+        return (<Home />);
     }
   }
   return(

@@ -1,16 +1,17 @@
-import Card from "../card";
-import Header from "../header";
+import Card from "../../../../components/card";
+import Header from "../../../../components/header";
 import { GiMoneyStack } from "react-icons/gi";
 import { BiCalendar } from "react-icons/bi";
 import { MdMoneyOffCsred } from "react-icons/md";
+import pageStyle from "../pages.module.css"
 import styles from "./home.module.css";
 import Select, { CSSObjectWithLabel } from "react-select";
 import { useEffect, useState } from "react";
-import TransationCount from "../transationCount";
-import TransationTable from "../transationTable";
-import useTransation from "../../hooks/useTransation";
-import TransationType from "../../types/transation";
-import useAuth from "../../hooks/useAuth";
+import TransationCount from "../../../../components/transationCount";
+import TransationTable from "../../../../components/transationTable";
+import useTransation from "../../../../hooks/useTransation";
+import TransationType from "../../../../types/transation";
+import useAuth from "../../../../hooks/useAuth";
 import moment from "moment";
 
 // filter options
@@ -73,14 +74,14 @@ const Home = () => {
     })
   }, [filteredTransations]);
 
-  const entry_sum = getTransationsSum(allTransations.filter(t=> t.category.isEntry));
-  const exit_sum = getTransationsSum(allTransations.filter(t=> !t.category.isEntry));
+  const entry_sum = getTransationsSum(allTransations.filter(t=> t.category.is_entry));
+  const exit_sum = getTransationsSum(allTransations.filter(t=> !t.category.is_entry));
   const total = entry_sum + exit_sum;
 
   return(
-    <div className={styles.container}>
+    <div>
       <Header title="Inicio"/>
-      <div className={styles.content}>
+      <div className={pageStyle.content}>
         {/* CARDS */}
         <div className={styles.cards}>
           <Card money={entry_sum} title={"Entradas"}>
