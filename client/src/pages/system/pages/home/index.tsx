@@ -11,7 +11,6 @@ import TransationCount from "../../../../components/transationCount";
 import TransationTable from "../../../../components/transationTable";
 import useTransation from "../../../../hooks/useTransation";
 import TransationType from "../../../../types/transation";
-import useAuth from "../../../../hooks/useAuth";
 import moment from "moment";
 
 // filter options
@@ -96,7 +95,7 @@ const Home = () => {
         {/* END CARDS */}
         {/* TRANSATIONS TABLE */}
         <div>
-          <div className={styles.head}>
+          <div className={pageStyle.head}>
             <h3>Transações</h3>
             <Select 
               defaultValue={options[0]} 
@@ -105,8 +104,8 @@ const Home = () => {
               styles={selectStyle}
             />
           </div>
-          <div className={styles.table_container} >
-           <TransationTable transatios={filteredTransations} />
+          <div>
+            <TransationTable transatios={filteredTransations} />
           </div>
         </div>
         {/* END TRANSATIONS TABLE */}

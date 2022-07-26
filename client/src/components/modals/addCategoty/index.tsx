@@ -32,7 +32,7 @@ const category_type_default = category_types[0];
 type props = {
   isOpen: boolean,
   closeModal: ()=> void,
-  setCategories: Dispatch<React.SetStateAction<CategoryType[]>>,
+  setCategories: Dispatch<React.SetStateAction<CategoryType[]>>
 }
 const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
   const { createCategory } = useCategory();

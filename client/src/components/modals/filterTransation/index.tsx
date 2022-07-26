@@ -57,7 +57,7 @@ const FilterTransation = ({isOpen, closeModal, categories, setFilterOptions}: pr
             id={value_id} 
             step="0.01"
             value={filterValue}
-            onChange={(e)=> setFilterValue(parseFloat(e.target.value))}
+            onChange={(e)=> setFilterValue(parseFloat(e.target.value ?? 0))}
           />
           <label htmlFor={date_id}>Data:</label>
           <div>

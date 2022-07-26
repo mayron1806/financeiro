@@ -1,0 +1,49 @@
+
+/* TABLE*/
+.table{
+  color: var(--white);
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.6rem;
+}
+/* TABLE HEAD*/
+.table thead{
+  background-color: var(--black-light);
+  font-size: 2rem;
+}
+.table thead th{
+  font-weight: 500;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--white);
+}
+/* TABLE BODY*/
+.table tbody{
+  text-align: center;
+}
+
+.table td{
+  border-bottom: 1px solid var(--gray);
+  padding-top: 5px;
+}
+.table tr .category{
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+.table tr .icon{
+  font-size: 2rem;
+  text-align: right;
+} 
+.table tr .icon svg{
+  cursor: pointer;
+}
+.no_transations{
+  margin: 4rem 0;
+  font-size: 1.6rem;
+  width: 100%;
+  text-align: center;
+  color: var(--white);
+}
+.no_transations svg{
+  font-size: 5rem;
+  margin-bottom: 2rem;
+}

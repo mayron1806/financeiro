@@ -1,5 +1,4 @@
 import { Moment } from "moment";
-import CategoryType from "./category";
 
 type TransationFilterType = {
   min_date?: Moment,
