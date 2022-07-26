@@ -46,8 +46,7 @@ const getTransationsSum = (transations: TransationType[]) => {
 }
 
 const Home = () => {
-  const { authContext } = useAuth();
-  const { getAllTransations, getFilteredTransations } = useTransation(authContext.user?.id); 
+  const { getAllTransations, getFilteredTransations } = useTransation(); 
 
   // todas transações
   const [allTransations, setAllTransations] = useState<TransationType[]>([]);
@@ -65,14 +64,14 @@ const Home = () => {
   const [filteredTransations, setFilteredTransations] = useState<TransationType[]>([]);
   const [transationFilter, setTransationFilter] = useState<number | undefined>(7);
   useEffect(()=>{
-    getFilteredTransations({min_date: moment().subtract(transationFilter, "days").toDate()})
+    getFilteredTransations({min_date: moment().subtract(transationFilter, "days")})
     .then(res => {
       setFilteredTransations(res);
     })
     .catch(err=>{
       console.log(err);
     })
-  }, [filteredTransations]);
+  }, [transationFilter]);
 
   const entry_sum = getTransationsSum(allTransations.filter(t=> t.category.is_entry));
   const exit_sum = getTransationsSum(allTransations.filter(t=> !t.category.is_entry));

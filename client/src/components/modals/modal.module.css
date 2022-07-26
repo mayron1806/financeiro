@@ -16,11 +16,13 @@
   font-size: 3rem;
   cursor: pointer;
 }
-.form{
+.content{
   color: var(--white);
   font-size: 2rem;
 }
-.form input{
+.content input[type="text"],
+.content input[type="number"],
+.content input[type="date"]{
   padding: 1rem;
   font-size: 2rem;
   border-radius: 5px;

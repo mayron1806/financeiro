@@ -39,7 +39,7 @@ const TransationTable = ({transatios}: props) => {
                       style={{backgroundColor: category.color}}
                     >{category.name}</span>
                   </td>
-                  <td>{moment(date).format("DD/MM/YYYY")}</td>
+                  <td>{moment(date).add(1, "d").format("DD/MM/YYYY")}</td>
                   <td className={styles.icon}><BiEdit /></td>
                   <td className={styles.icon}><AiOutlineClose /></td>
                 </tr>

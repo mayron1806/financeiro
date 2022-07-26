@@ -1,0 +1,21 @@
+.container{
+  height: 100%;
+  position: relative;
+}
+.container input{
+  height: 100%;
+  font-size: 2rem;
+  padding: 0 20px;
+  border-radius: 40px;
+  background-color: transparent;
+  color: var(--white);
+  border: 2px solid var(--white);
+}
+.container svg{
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: var(--white);
+}

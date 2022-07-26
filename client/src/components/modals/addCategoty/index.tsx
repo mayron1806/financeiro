@@ -1,43 +1,14 @@
 import React, { Dispatch, FormEvent, useId, useState } from "react";
 import Modal from "react-modal";
-import Select, { CSSObjectWithLabel } from "react-select";
+import Select from "react-select";
 import Submit from "../../submit";
 import styles from "../modal.module.css";
 import {AiOutlineClose} from "react-icons/ai";
 import useCategory from "../../../hooks/useCategory";
-import useAuth from "../../../hooks/useAuth";
 import CategoryType from "../../../types/category";
+import { modalStyle } from "../modalStyle";
+import { selectStyle } from "../selectStyle";
 
-//styles
-const modalStyle = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: "var(--black-light)",
-    border: 0,
-    height: "fit-content"
-  },
-  overlay: {backgroundColor: "rgba(0,0,0,0.1)"}
-}
-const selectStyle = {
-  control: (styles : CSSObjectWithLabel) => ({
-    ...styles, 
-    backgroundColor: "transparent",
-    border: "1px solid var(--white)"
-  }),
-  menu: (styles: CSSObjectWithLabel)=>({
-    ...styles, backgroundColor: "var(--black)"
-  }), 
-  option: (styles: CSSObjectWithLabel)=>({
-    ...styles, backgroundColor: "var(--black)", color:"var(--white)"
-  }),
-  singleValue: (styles: CSSObjectWithLabel)=>({
-    ...styles, color: "var(--white)"
-  })
-}
 // color
 const color_options = [
   "#68FA14",
@@ -61,12 +32,10 @@ const category_type_default = category_types[0];
 type props = {
   isOpen: boolean,
   closeModal: ()=> void,
-  setCategories: Dispatch<React.SetStateAction<CategoryType[]>>
+  setCategories: Dispatch<React.SetStateAction<CategoryType[]>>,
 }
 const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
-  const { authContext } = useAuth();
-  const { createCategory } = useCategory(authContext.user?.id);
-
+  const { createCategory } = useCategory();
   // IDs
   const name_id = useId();
   const type_id = useId();
@@ -125,7 +94,7 @@ const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
           <h2>Adicionar categoria</h2>
           <button onClick={() => closeModal()}><AiOutlineClose /></button>
         </div>
-        <form className={styles.form} onSubmit={(e)=> sendForm(e)}>
+        <form className={styles.content} onSubmit={(e)=> sendForm(e)}>
           <label htmlFor={name_id}>Nome</label>
           <input 
             type="text" 

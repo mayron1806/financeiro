@@ -2,14 +2,21 @@ import styles from "./sidebar.module.css";
 import {FiLogOut} from "react-icons/fi";
 import {AiFillHome, AiFillSchedule} from "react-icons/ai";
 import {MdOutlineAttachMoney, MdCategory} from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 type props = {
   tab: string | undefined
 }
 const SideBar = ({ tab }: props) => {
+  const navegate = useNavigate();
+  const { signOut } = useAuth();
   const isActiveMenu = (name: string) => {
     if(name === tab) return styles.active;
+  }
+  const logout = () => {
+    signOut();
+    navegate("/signin");
   }
   return(
     <div className={styles.container}>
@@ -48,7 +55,7 @@ const SideBar = ({ tab }: props) => {
       </div>
       <footer className={styles.footer}>
         <p>UserName</p>
-        <FiLogOut />
+        <FiLogOut onClick={()=> logout()}/>
       </footer>
     </div>
   )

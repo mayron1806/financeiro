@@ -2,9 +2,12 @@ import axios from "axios";
 import * as transationsAPI from "../services/transations";
 import TransationType from "../types/transation";
 import TransationFilterType from "../types/transationFilter";
+import useAuth from "./useAuth";
 
-const useTransation = (user_id: string | undefined )=>{
-
+const useTransation = ()=>{
+  const { authContext } = useAuth();
+  const user_id = authContext.user?.id;
+  
   const getAllTransations = async ()=>{
     let transations : TransationType[] = []; 
     if(!user_id){
@@ -52,7 +55,25 @@ const useTransation = (user_id: string | undefined )=>{
     return transations;
   }
   const createTransation = async (transation: TransationType) => {
-
+    if(!user_id){
+      throw new Error("Você precisa estar logado para acessar suas transações.");
+    }
+    try{
+      await transationsAPI.create(user_id, transation);
+    } 
+    catch(error){
+      console.log(error);
+      if(!axios.isAxiosError(error) || !error.response){
+        throw new Error("Erro no servidor, tente novamente mais tarde.");
+      }
+      else{
+        const status = error.response.status;
+        const message = error.response.data;
+        if(status === 404 && (message === "User id not found" || message === "User not found")){
+          throw new Error("Transações não encontradas, tente realizar o login novamente.");
+        }
+      }
+    }
   }
 
   return { getAllTransations, getFilteredTransations, createTransation };

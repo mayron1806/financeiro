@@ -1,66 +1,24 @@
-import React, { Dispatch, FormEvent, useEffect, useId, useState } from "react";
+import  { FormEvent, useId, useState } from "react";
 import Modal from "react-modal";
-import Select, { CSSObjectWithLabel } from "react-select";
+import Select from "react-select";
 import Submit from "../../submit";
 import styles from "../modal.module.css";
 import {AiOutlineClose} from "react-icons/ai";
-import useCategory from "../../../hooks/useCategory";
-import useAuth from "../../../hooks/useAuth";
 import CategoryType from "../../../types/category";
 import TransationType from "../../../types/transation";
 import useTransation from "../../../hooks/useTransation";
-import moment from "moment";
+import moment, { Moment } from "moment";
+import { modalStyle } from "../modalStyle";
+import { selectStyle } from "../selectStyle";
 
-//styles
-const modalStyle = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: "var(--black-light)",
-    border: 0,
-    height: "fit-content"
-  },
-  overlay: {backgroundColor: "rgba(0,0,0,0.1)"}
-}
-const selectStyle = {
-  control: (styles : CSSObjectWithLabel) => ({
-    ...styles, 
-    backgroundColor: "transparent",
-    border: "1px solid var(--white)"
-  }),
-  menu: (styles: CSSObjectWithLabel)=>({
-    ...styles, backgroundColor: "var(--black)"
-  }), 
-  option: (styles: CSSObjectWithLabel)=>({
-    ...styles, backgroundColor: "var(--black)", color:"var(--white)"
-  }),
-  singleValue: (styles: CSSObjectWithLabel)=>({
-    ...styles, color: "var(--white)"
-  })
-}
 
 type props = {
   isOpen: boolean,
   closeModal: ()=> void,
-  setTransations: Dispatch<React.SetStateAction<TransationType[]>>
+  categories: CategoryType[]
 }
-const AddTransation = ({isOpen, closeModal, setTransations}: props) => {
-  const { authContext } = useAuth();
-  const { createTransation } = useTransation(authContext.user?.id);
-  const { getCategories } = useCategory(authContext.user?.id);
-
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-  //const categoriesm = categories.map(category=> {label: category.name, value: category._id})
-  useEffect(()=>{
-    getCategories()
-    .then(res=>{
-      setCategories(res);
-    })
-    console.log(categories);
-  }, [])
+const AddTransation = ({isOpen, closeModal, categories}: props) => {
+  const { createTransation } = useTransation();
 
   // IDs
   const name_id = useId();
@@ -70,7 +28,8 @@ const AddTransation = ({isOpen, closeModal, setTransations}: props) => {
 
   const [transationName, setTransationName] = useState<string>("");
   const [transationValue, setTransationValue] = useState<number>(0);
-  const [transationCategory, setTransationCategory] = useState<CategoryType | undefined>();
+  const [transationCategory, setTransationCategory] = useState<CategoryType>();
+  const [transationDate, setTransationDate] = useState<Moment>(moment());
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -78,6 +37,37 @@ const AddTransation = ({isOpen, closeModal, setTransations}: props) => {
   
   const sendForm = (e: FormEvent) => {
     e.preventDefault();
+
+    if(transationName.length < 3 || transationName.length > 20) return setError("O nome da transação deve ter entre 3 e 20 caracteres.");
+    if(transationValue === 0 || isNaN(transationValue)) return setError("Você precisa definir um valor para a transação.");
+    if(!transationCategory) return setError("Defina uma categoria para a transação.");
+    if(moment(transationDate) > moment()) return setError("A data deve ser no maximo ate o dia de hoje.");
+    
+    setError("");
+    setIsCreating(true);
+    // cria transação
+    const transation: TransationType = {
+      name: transationName,
+      value: transationValue,
+      category: transationCategory,
+      date: transationDate
+    }
+    createTransation(transation)
+    .then(() =>{
+      // reset form
+      setTransationName("");
+      setTransationValue(0);
+      setTransationCategory(undefined);
+      setTransationDate(moment());
+      
+      closeModal();
+    })
+    .catch(error=>{
+      console.log(error);
+    })
+    .finally(()=>{
+      setIsCreating(false);
+    })
   }
   return(
     <div>
@@ -90,7 +80,7 @@ const AddTransation = ({isOpen, closeModal, setTransations}: props) => {
           <h2>Adicionar transação</h2>
           <button onClick={() => closeModal()}><AiOutlineClose /></button>
         </div>
-        <form className={styles.form} onSubmit={(e)=> sendForm(e)}>
+        <form className={styles.content} onSubmit={(e)=> sendForm(e)}>
           <label htmlFor={name_id}>Nome</label>
           <input 
             type="text" 
@@ -103,6 +93,7 @@ const AddTransation = ({isOpen, closeModal, setTransations}: props) => {
           <input 
             type="number" 
             id={value_id} 
+            step="0.01"
             value={transationValue} 
             onChange={(e) => setTransationValue(parseFloat(e.target.value))} 
           />
@@ -118,7 +109,17 @@ const AddTransation = ({isOpen, closeModal, setTransations}: props) => {
           <input 
             type="date"
             max={moment().format("YYYY-MM-DD")} 
+            value={transationDate ? moment(transationDate).format("YYYY-MM-DD") : undefined}
+            onChange={(e)=> setTransationDate(moment(e.target.value))}
           />
+          {
+            error.length > 0 &&
+            <p className={styles.error}>{error}</p>
+          } 
+          {
+            isCreating &&
+            <p className={styles.loading}>Criando transação aguarde...</p>
+          }
           <Submit value="Criar"/>
         </form>
       </Modal>

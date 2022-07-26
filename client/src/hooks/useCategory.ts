@@ -2,8 +2,11 @@ import axios from "axios";
 import * as categoryAPI from "../services/category";
 import CategoryType from "../types/category";
 import CategoryFilterType from "../types/categotyFilter";
-const useCategory = (user_id: string | undefined) => {
-
+import useAuth from "./useAuth";
+const useCategory = () => {
+  const { authContext } = useAuth();
+  const user_id = authContext.user?.id;
+  
   const getCategories = async (options: CategoryFilterType = {}) => {
     let categories: CategoryType[] =[];
     if(!user_id){

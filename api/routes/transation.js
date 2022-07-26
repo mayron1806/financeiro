@@ -21,47 +21,54 @@ router.get("/", async (req,res) => {
   try{
     const user_id = req.user_id;
     
-    const {min_date, max_date, categories, entry_transations} = req.query;
-    // DATE
-    // verifica se foram passadas as datas, se sim converte elas para "Moment"
-    const min = min_date !== undefined ? moment(min_date) : undefined;
-    const max = max_date !== undefined ? moment(max_date) : undefined;
-    
-    const min_date_is_valid = moment(min, "YYYY-MM-DD", true).isValid();
-    const max_date_is_valid = moment(max, "YYYY-MM-DD", true).isValid();
+    const {name, min_date, max_date, categories, is_entry, value} = req.query;
 
     const query = transationModel
-    .find({user: user_id})
-    .populate({path: "category", select: {name: 1, is_entry: 1}})
-    .select({name: 1, value: 1, date: 1, category: 1});
-    
+    .find({user: user_id});
+
     // DATE FILTER
-    if(min_date_is_valid) query.find({date: {$gte: moment(min)}});
-    if(max_date_is_valid) query.find({date: {$lte: moment(max)}});
+    if(min_date) {
+      const moment_min_date = moment(min_date, "YYYY-MM-DD").toDate();
+      const string_min_date = new Date(moment_min_date).toISOString().slice(0, 10);
+      const final_min_date = new Date(string_min_date);
+      
+      query.find({date: {$gte: final_min_date}});
+    }
+    if(max_date) {
+      const moment_max_date = moment(max_date, "YYYY-MM-DD").toDate();
+      const string_max_date = new Date(moment_max_date).toISOString().slice(0, 10);
+      const final_max_date = new Date(string_max_date);
+      
+      query.find({date: {$lte: final_max_date}});
+    }
+    
+    // NAME FILTER
+    if(name && name.length > 0) query.find({name: new RegExp(name)});
+
+    // VALUE FILTER
+    if(value && value !== 0) query.find({value: value});
     
     // CATEGORY FILTER
-    if(categories && categories.length > 0){
-      query.populate({
-        path: "category",
-        match: {name: {$in: categories}},
-        select: {name: 1, is_entry: 1}
-      })
-    }
-
+    if(categories && categories.length > 0) query.find({category: {$in: categories}});
+    
     // ENTRY FILTER
-    if(typeof(entry_transations) === "boolean"){
+    if(typeof(is_entry) === "boolean"){
       query.populate({
         path: "category", 
-        match: {is_entry: entry_transations},
+        match: {is_entry: is_entry},
         select: {name: 1, is_entry: 1}
       })
     }
+    query.populate({path: "category", select: {name: 1, is_entry: 1}})
+    .select({name: 1, value: 1, date: 1, category: 1});
+
     const result = await query;
     const transations = result.filter(transation => transation.category !== null);
 
     res.status(200).json(transations);
   }catch(error){
-      res.status(400).json("Catch: " + error);
+    console.log(error);
+    res.status(400).json("Catch: " + error);
   }
 })
 // adiciona transação
@@ -70,8 +77,8 @@ router.post("/", validateDate, async (req,res)=>{
       const user_id = req.user_id;
       const {name, value, category, date} = req.body;
       
-      if(!name || !value || !category){
-        return res.status(404).json("Name, value or category not found");
+      if(!name || !value || !category || !date){
+        return res.status(404).json("Name, value, category or date not found.");
       }
 
       const current_date = moment();
@@ -79,7 +86,9 @@ router.post("/", validateDate, async (req,res)=>{
         return res.status(400).json("You cannot add transations for a date after than today");
       }
       // deixa a data com um formato padrão
-      const formated_date = moment(date).format("L");
+      const moment_date = moment(date, "YYYY-MM-DD").toDate();
+      const date_string = moment_date.toISOString().slice(0, 10);
+      const final_date = new Date(date_string);
 
       // verifica se tem uma categoria
       const category_db = await categoryModel.findById(category);
@@ -93,7 +102,7 @@ router.post("/", validateDate, async (req,res)=>{
         value : formated_value,
         category,
         user: user_id,
-        date: formated_date
+        date: final_date
       };
       const new_transation = await transationModel.create(transation);
       res.status(201).json(new_transation);  

@@ -1,9 +1,11 @@
+import { Moment } from "moment";
 import CategoryType from "./category";
 
 type TransationType = {
   name: string,
   value: number,
-  category: CategoryType
-  date: Date
+  category: CategoryType,
+  date: Moment,
+  _id?: string
 }
 export default TransationType;

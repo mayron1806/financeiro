@@ -16,8 +16,9 @@ const Category = () => {
   const closeModal = ()=> setIsOpen(false);
 
   const [categories, setCategories] = useState<CategoryType[]>([]);
-  const { authContext } = useAuth();
-  const { getCategories } = useCategory(authContext.user?.id);
+
+  const { getCategories } = useCategory();
+  
   useEffect(()=> {
     getCategories()
     .then(res => {

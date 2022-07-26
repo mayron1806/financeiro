@@ -1,7 +1,12 @@
+import { Moment } from "moment";
+import CategoryType from "./category";
+
 type TransationFilterType = {
-  min_date?: Date,
-  max_date?: Date,
+  min_date?: Moment,
+  max_date?: Moment,
   categories?: string[],
-  entry_transations?: boolean
+  is_entry?: boolean,
+  name?: string,
+  value?: number
 }
 export default TransationFilterType;
