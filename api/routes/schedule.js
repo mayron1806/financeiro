@@ -84,7 +84,7 @@ router.post("/", async (req, res)=>{
   try{
     const user_id = req.user_id;
 
-    const {name, value, category, next, n_executions} = req.body;
+    const {name, value, category, next, n_executions: max} = req.body;
     if(!name || !value || !category) return res.status(404).json({error: "Name, value or category not found"});
     
     let next_date = new Date(moment().toISOString().slice(0, 10));
@@ -112,7 +112,7 @@ router.post("/", async (req, res)=>{
       user: user_id,
       execution: {
         next_date, 
-        max: n_executions
+        max
       }
     }
     await scheduleModel.create(new_schedule);
@@ -128,33 +128,55 @@ router.post("/", async (req, res)=>{
   }
 })
 // atualiza uma transação agendada
-router.patch("/", async (req, res)=>{
+router.put("/", async (req, res)=>{
   try{
     const user_id = req.user_id;
-
-    const {schedule_id, name, value, category, date, max_executions} = req.body;
-    if(!schedule_id) return res.status(404).json({error: "Schedule id not found"});
-
-    let next_date = null;
-    next_date = moment(date, "YYYY/MM/DD", true).isValid() ?? moment(date);
-    if(!next_date || next_date < moment()) next_date = moment();
-    
+    const {schedule_id, name, value, category_id, next, max} = req.body;
     const schedule = await scheduleModel.findById(schedule_id);
-    // verifica se a transação agendada existe
     if(!schedule) return res.status(404).json({error: "Schedule not found"});
-    // verifica se quem esta tentando atualizar é o usuar
-    if(schedule.user.toString() !== user_id) return res.status(401).json({error: "You can`t access"});
     
-    // atualizações
-    if(name) schedule.name = name;
-    if(value) schedule.value = value;
-    if(category) schedule.category = category;
-    if(next_date) schedule.execution.next_date = next_date;
-    if(max_executions) schedule.execution.max = max_executions;
+    // verifica se a data e menor que a data atual
+    if(next){
+      const current_date = moment();
+      if(moment(next) < current_date) return res.status(400).json("You cannot update schedule for a date before than today.");
+    }
 
-    const updated = await schedule.save();
+    let category_db;
+    if(category_id){
+      // verifica se tem uma categoria com o id passado
+      category_db = await categoryModel.findById(category_id);
+      if(!category_db) return res.status(404).json("Category not found");
+    }
+    else{
+      const currentSchedule = await scheduleModel
+      .findById(schedule_id)
+      .populate({path: "category"})
+      .select({category: 1});
+      if(!currentSchedule) return res.status(404).json("Transation not found");
+      category_db = currentSchedule.category;
+    }
 
-    res.status(200).json(updated);
+    let new_value;
+    // define o value formatado de acordo com a categoria
+    if(value) {
+      new_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
+    }
+    else{
+      const old_value = schedule.value;
+      new_value = category_db.is_entry ? Math.abs(old_value) : -Math.abs(old_value);
+    }
+    const new_schedule = {
+      name, 
+      value,
+      category: category_id,
+      execution: {
+        next_date: next,
+        max: max
+      }
+    }
+    const schedule_updated = await scheduleModel
+    .findOneAndUpdate({_id: schedule_id, user: user_id}, new_schedule, {new: true});
+    res.status(200).json(schedule_updated);
   }catch(error){
     res.status(400).json("Catch: " + error);
   }

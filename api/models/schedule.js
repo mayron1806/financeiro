@@ -20,7 +20,7 @@ const ScheduleSchema = mongoose.Schema({
     },
     execution: {
         next_date: Date,
-        max: {type: Number, default: null},
+        max: {type: Number, default: 0},
         count: {type: Number, default: 0}
     }
 })

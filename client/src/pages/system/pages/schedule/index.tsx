@@ -14,8 +14,8 @@ const Schedule = () => {
 
   const { getScheduleTransations } = useSchedule();
   const [scheduleTransatios, setScheduleTransatios] = useState<ScheduleTransationType[]>([]);
-  
-  useEffect(()=>{
+
+  const fetchSchedules = ()=>{
     getScheduleTransations()
     .then(res=>{
       setScheduleTransatios(res);
@@ -23,8 +23,9 @@ const Schedule = () => {
     .catch(error=>{
       console.log(error);
     })
-  }, [])
-
+  }
+  
+  useEffect(() => {fetchSchedules()}, [])
   return(
     <div>
       <Header title="Agendar"/>
@@ -38,7 +39,7 @@ const Schedule = () => {
           </button>
         </div>
         <div>
-          <ScheduleTable transatios={scheduleTransatios}/>
+          <ScheduleTable schedules={scheduleTransatios} onChange={fetchSchedules}/>
         </div>
       </div>
       <AddSchedule 

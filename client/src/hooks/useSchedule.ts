@@ -2,6 +2,7 @@ import ScheduleTransationType from "../types/scheduleTransations";
 import useAuth from "./useAuth";
 import * as scheduleAPI from "../services/schedule";
 import axios from "axios";
+import ScheduleTransationUpdateType from "../types/scheduleTransationUpdate";
 
 const useSchedule = () => {
   const { authContext } = useAuth();
@@ -49,6 +50,48 @@ const useSchedule = () => {
     }
     return schedules;
   }
-  return {getScheduleTransations, addScheduleTransation}
+  const updateSchedule = async (options: ScheduleTransationUpdateType) => {
+    if(!user_id){
+      throw new Error("Você precisa estar logado para acessar suas transações.");
+    }
+    try{
+      await scheduleAPI.updateSchedule(user_id, options);
+    }
+    catch(error){
+      if(!axios.isAxiosError(error) || !error.response){
+        throw new Error("Erro no servidor, tente novamente mais tarde");
+      }
+      else{
+        const status = error.response.status;
+        const message = error.response.data;
+        if(status === 409){
+          throw new Error("Esse nome de categoria já está em uso.");
+        }
+        throw new Error(message + status.toString());
+      }
+    }
+  }
+  const deleteSchedule = async (schedules: ScheduleTransationType[] ) =>{
+    if(!user_id){
+      throw new Error("Você precisa estar logado para acessar suas transações.");
+    }
+    try{
+      await scheduleAPI.deleteSchedule(user_id, schedules);
+    }
+    catch(error){
+      if(!axios.isAxiosError(error) || !error.response){
+        throw new Error("Erro no servidor, tente novamente mais tarde");
+      }
+      else{
+        const status = error.response.status;
+        const message = error.response.data;
+        if(status === 409){
+          throw new Error("Esse nome de categoria já está em uso.");
+        }
+        throw new Error(message + status.toString());
+      }
+    }
+  }
+  return {getScheduleTransations, addScheduleTransation, updateSchedule, deleteSchedule}
 }
 export default useSchedule;

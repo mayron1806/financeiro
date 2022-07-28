@@ -25,10 +25,11 @@ const CategoryTable = ({categories, onChange}: props) => {
   } 
 
   const [categoryToUpdate, setCategoryToUpdate] = useState<CategoryType>();
+
   const [updateIsOpen, setUpdateIsOpen] = useState<boolean>(false);
   const openUpdateModal = () => setUpdateIsOpen(true);
   const closeUpdateModal = () => setUpdateIsOpen(false);
-
+  
   return(
     <div>
       <table className={styles.table}>

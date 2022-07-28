@@ -56,6 +56,7 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
     
     setError("");
     setIsCreating(true);
+
     let options: TransationUpdateType = { _id: id };
     // verifica se foram alterados os dados, se sim recebe o valor atualizado, se não recebe undefined
     if(transationName && transationName !== transationToUpdate.name){
@@ -77,7 +78,7 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
       closeModal();
     })
     .catch(error=>{
-      console.log(error);
+      console.log(error.message);
     })
     .finally(()=>{
       setIsCreating(false);
@@ -103,7 +104,7 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
             onChange={(e) => setTransationName(e.target.value)} 
           />
 
-          <label htmlFor={category_id}>Valor(R$)</label>
+          <label htmlFor={value_id}>Valor(R$)</label>
           <input 
             type="number" 
             id={value_id} 
@@ -112,8 +113,9 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
             onChange={(e) => setTransationValue(parseFloat(e.target.value))} 
           />
 
-          <label htmlFor={date_id}>Categoria</label>
+          <label htmlFor={category_id}>Categoria</label>
           <Select 
+            id={category_id}
             options={categories.map(category=> ({label: category.name, value: category}))}
             defaultValue={{label: transationCategory.name, value: transationCategory}}
             styles={selectStyle}
@@ -121,6 +123,7 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
           />
           <label htmlFor={date_id}>Data da transação</label>
           <input 
+            id={date_id}
             type="date"
             max={moment().format("YYYY-MM-DD")} 
             value={transationDate ? moment(transationDate).format("YYYY-MM-DD") : undefined}
@@ -134,7 +137,7 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
             isCreating &&
             <p className={styles.loading}>Atualizando transação, aguarde...</p>
           }
-          <Submit value="Criar"/>
+          <Submit value="Atualizar"/>
         </form>
       </Modal>
     </div>

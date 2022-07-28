@@ -1,16 +1,38 @@
 import moment from "moment";
+import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 import { BsSafe } from "react-icons/bs";
+import useSchedule from "../../hooks/useSchedule";
 import ScheduleTransationType from "../../types/scheduleTransations";
 import { formatColorNumbers, formatMoney } from "../../utils/format";
+import UpdateSchedule from "../modals/updateSchedule";
 import styles from "./schedule.module.css";
 
 
 type props = {
-  transatios: ScheduleTransationType[]
+  schedules: ScheduleTransationType[],
+  onChange: ()=> void
 }
-const ScheduleTable = ({transatios}: props) => {
+const ScheduleTable = ({ schedules, onChange}: props) => {
+  const { deleteSchedule } = useSchedule();
+  const del = (schedule: ScheduleTransationType)=>{
+    if(!schedule._id) return;
+    deleteSchedule([schedule])
+    .then(res => {  
+      onChange();
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }
+
+  const [selectedSchedule, setSelectedSchedule] = useState<ScheduleTransationType>();
+
+  const [updateIsOpen, setUpdateIsOpen] = useState<boolean>(false);
+  const openUpdateModal = () => setUpdateIsOpen(true);
+  const closeUpdateModal = () => setUpdateIsOpen(false);
+  
   return(
     <div>
       <table className={styles.table}>
@@ -27,9 +49,9 @@ const ScheduleTable = ({transatios}: props) => {
         </thead>
         <tbody>
           {
-            transatios.map((transation, index) =>{
-              const {name, category, value, execution} = transation;
-              console.log(category);
+            schedules.map((schedule, index) =>{
+              const {name, category, value, execution} = schedule;
+              
               return(
                 <tr key={index}>
                   <td style={{textAlign: "left"}}>{name}</td>
@@ -51,8 +73,16 @@ const ScheduleTable = ({transatios}: props) => {
                         <p>Infinito</p>
                     }
                   </td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
+                  <td className={styles.icon}>
+                    <BiEdit onClick={() => {
+                        setSelectedSchedule(schedule);
+                        openUpdateModal();
+                      }} 
+                    />
+                  </td>
+                  <td className={styles.icon}>
+                    <AiOutlineClose onClick={()=> del(schedule)}/>
+                  </td>
                 </tr>
               )
             })
@@ -60,11 +90,20 @@ const ScheduleTable = ({transatios}: props) => {
         </tbody>
       </table>
       {
-        transatios.length < 1 &&
+        schedules.length < 1 &&
         <div className={styles.no_transations}>
           <BsSafe />
           <p>Ainda não foram adicionadas transações.</p>
         </div>
+      }
+      {
+        selectedSchedule &&
+        <UpdateSchedule 
+          isOpen={updateIsOpen} 
+          closeModal={closeUpdateModal}
+          scheduleToUpdate={selectedSchedule}
+          onUpdate={onChange}
+        />
       }
     </div>
   )

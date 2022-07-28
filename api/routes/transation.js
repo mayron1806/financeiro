@@ -115,7 +115,7 @@ router.put("/", async (req, res) => {
     // verifica existe uma transação com o id passado
     const transation = await transationModel.findById(transation_id);
     if(!transation) return res.status(404).json("Transation not found");
-
+    console.log(category_id);
     // verifica se a data e maior que a data atual
     if(date){
       const current_date = moment();
