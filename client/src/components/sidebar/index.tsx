@@ -10,10 +10,12 @@ type props = {
 }
 const SideBar = ({ tab }: props) => {
   const navegate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, authContext } = useAuth();
+
   const isActiveMenu = (name: string) => {
     if(name === tab) return styles.active;
   }
+
   const logout = () => {
     signOut();
     navegate("/signin");
@@ -54,7 +56,7 @@ const SideBar = ({ tab }: props) => {
         </div>
       </div>
       <footer className={styles.footer}>
-        <p>UserName</p>
+        <p>{authContext.user?.name}</p>
         <FiLogOut onClick={()=> logout()}/>
       </footer>
     </div>

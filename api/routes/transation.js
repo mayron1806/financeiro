@@ -3,7 +3,6 @@ const moment = require("moment");
 const validateUserID = require("../middlewares/validateUserID");
 const transationModel = require("../models/transation");
 const categoryModel = require("../models/category");
-const { min } = require("moment");
 router.use(validateUserID);
 
 const validateDate = (req, res, next)=>{
@@ -20,9 +19,7 @@ const validateDate = (req, res, next)=>{
 router.get("/", async (req,res) => {
   try{
     const user_id = req.user_id;
-    
     const {name, min_date, max_date, categories, is_entry, value} = req.query;
-
     const query = transationModel
     .find({user: user_id});
 
@@ -59,7 +56,7 @@ router.get("/", async (req,res) => {
         select: {name: 1, is_entry: 1}
       })
     }
-    query.populate({path: "category", select: {name: 1, is_entry: 1}})
+    query.populate({path: "category"})
     .select({name: 1, value: 1, date: 1, category: 1});
 
     const result = await query;
@@ -111,39 +108,58 @@ router.post("/", validateDate, async (req,res)=>{
     }
 })
 // atualiza transação
-router.put("/", validateDate, async (req, res) => {
-    try{
-      const user_id = req.user_id;
-      const {transation_id, name, category, value, date} = req.body;
-      if(!transation_id) return res.status(404).json("Transation id not found");
+router.put("/", async (req, res) => {
+  try{
+    const user_id = req.user_id;
+    const {transation_id, name, category_id, value, date} = req.body;
+    // verifica existe uma transação com o id passado
+    const transation = await transationModel.findById(transation_id);
+    if(!transation) return res.status(404).json("Transation not found");
 
-      if(!name && !category && !value){
-          return res.status(404).json("You need to send a name, category or value");
-      }
+    // verifica se a data e maior que a data atual
+    if(date){
       const current_date = moment();
-      if(moment(date) > current_date){
-          return res.status(400).json("You cannot update transations for a date after than today");
-      }
-      // verifica se tem uma categoria
-      const category_db = await categoryModel.findById(category);
-      if(!category_db) return res.status(404).json("Category not found");
-
-      // formata o valor da transação para o tipo da categoria
-      const formated_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
-
-      const transation = {
-        name, 
-        category,
-        date,
-        value: formated_value
-      }
-      const updated_transation = await transationModel
-        .findByIdAndUpdate({_id: transation_id, user: user_id}, transation, {new: true});
-
-      res.status(200).json(updated_transation);
-    }catch(error){
-      res.status(400).json("Catch: " + error);
+      if(moment(date) > current_date) return res.status(400).json("You cannot update transations for a date after than today");
     }
+
+    let category_db;
+    
+    if(category_id){
+      // verifica se tem uma categoria com o id passado
+      category_db = await categoryModel.findById(category_id);
+      if(!category_db) return res.status(404).json("Category not found");
+    }
+    else{
+      const currentTransation = await transationModel
+      .findById(transation_id)
+      .populate({path: "category"})
+      .select({category: 1});
+      if(!currentTransation) return res.status(404).json("Transation not found");
+      category_db = currentTransation.category;
+    }
+    let new_value;
+    // define o value formatado de acordo com a categoria
+    if(value) {
+      new_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
+    }
+    else{
+      const old_value = transation.value;
+      new_value = category_db.is_entry ? Math.abs(old_value) : -Math.abs(old_value);
+    }
+    
+    const new_transation = {
+      name, 
+      category: category_db._id,
+      date,
+      value: new_value
+    }
+    const updated_transation = await transationModel
+    .findOneAndUpdate({_id: transation_id, user: user_id}, new_transation, {new: true});
+    
+    res.status(200).json(updated_transation);
+  }catch(error){
+    res.status(400).json("Catch: " + error);
+  }
 })
 // deleta transação
 router.delete("/", async (req, res) => {

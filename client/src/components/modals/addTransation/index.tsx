@@ -1,4 +1,4 @@
-import  { FormEvent, useId, useState } from "react";
+import  { FormEvent, useEffect, useId, useState } from "react";
 import Modal from "react-modal";
 import Select from "react-select";
 import Submit from "../../submit";
@@ -10,15 +10,39 @@ import useTransation from "../../../hooks/useTransation";
 import moment, { Moment } from "moment";
 import { modalStyle } from "../modalStyle";
 import { selectStyle } from "../selectStyle";
+import useCategory from "../../../hooks/useCategory";
 
 
 type props = {
   isOpen: boolean,
   closeModal: ()=> void,
-  categories: CategoryType[]
+  onAdd: ()=> void
 }
-const AddTransation = ({isOpen, closeModal, categories}: props) => {
+const AddTransation = ({isOpen, closeModal, onAdd}: props) => {
+  // categorias 
+  const { getCategories } = useCategory();
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+
+  useEffect(()=>{
+    getCategories()
+    .then(res => {
+      setCategories(res);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }, [])
+  
+  // transações
   const { createTransation } = useTransation();
+  
+  const [transationName, setTransationName] = useState<string>("");
+  const [transationValue, setTransationValue] = useState<number>(0);
+  const [transationCategory, setTransationCategory] = useState<CategoryType>();
+  const [transationDate, setTransationDate] = useState<Moment>(moment());
+
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   // IDs
   const name_id = useId();
@@ -26,15 +50,6 @@ const AddTransation = ({isOpen, closeModal, categories}: props) => {
   const date_id = useId();
   const value_id = useId();
 
-  const [transationName, setTransationName] = useState<string>("");
-  const [transationValue, setTransationValue] = useState<number>(0);
-  const [transationCategory, setTransationCategory] = useState<CategoryType>();
-  const [transationDate, setTransationDate] = useState<Moment>(moment());
-
-  const [isCreating, setIsCreating] = useState<boolean>(false);
-
-  const [error, setError] = useState<string>("");
-  
   const sendForm = (e: FormEvent) => {
     e.preventDefault();
 
@@ -45,7 +60,7 @@ const AddTransation = ({isOpen, closeModal, categories}: props) => {
     
     setError("");
     setIsCreating(true);
-    // cria transação
+    
     const transation: TransationType = {
       name: transationName,
       value: transationValue,
@@ -60,6 +75,8 @@ const AddTransation = ({isOpen, closeModal, categories}: props) => {
       setTransationCategory(undefined);
       setTransationDate(moment());
       
+      onAdd();
+      
       closeModal();
     })
     .catch(error=>{
@@ -69,6 +86,7 @@ const AddTransation = ({isOpen, closeModal, categories}: props) => {
       setIsCreating(false);
     })
   }
+  
   return(
     <div>
       <Modal

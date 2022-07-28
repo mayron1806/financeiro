@@ -11,7 +11,7 @@ export const create = async(user_id: string, options: ScheduleTransationType)=>{
     {
       name: options.name,
       value: options.value,
-      category: options.category._id,
+      category: options.category,
       next: options.execution.next_date,
       n_executions: options.execution.max
     },

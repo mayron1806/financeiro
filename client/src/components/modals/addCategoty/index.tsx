@@ -8,26 +8,7 @@ import useCategory from "../../../hooks/useCategory";
 import CategoryType from "../../../types/category";
 import { modalStyle } from "../modalStyle";
 import { selectStyle } from "../selectStyle";
-
-// color
-const color_options = [
-  "#68FA14",
-  "#2C41FA",
-  "#FA7946",
-  "#4EAD17",
-  "#FA46CF",
-  "#AD9417",
-  "#0EADAB",
-  "#FA412D",
-  "#AD095D",
-  "#90AD57"
-]
-// types (isEntry)
-const category_types = [
-  {label: "Entrada", value: true},
-  {label: "Saida", value: false}
-]
-const category_type_default = category_types[0];
+import color_options from "../../../style/colorOptions";
 
 type props = {
   isOpen: boolean,
@@ -42,7 +23,7 @@ const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
   const color_id = useId();
 
   const [categoryName, setCategoryName] = useState<string>("");
-  const [isEntry, setIsEntry] = useState<boolean | undefined>(category_type_default.value);
+  const [isEntry, setIsEntry] = useState<boolean>();
   const [selectedColor, setSelectedColor] = useState<string>("");
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -62,17 +43,22 @@ const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
       return setError("Selecione alguma cor para a categoria.");
     }
     setError("");
-
+    
+    const new_category: CategoryType = {
+      name: categoryName, 
+      is_entry: isEntry, 
+      color: selectedColor
+    }
     // cria categoria
     setIsCreating(true);
-    createCategory(categoryName, isEntry, selectedColor)
+    createCategory(new_category)
     .then(res => {
       setCategories(res);
       
       // reset form
       setCategoryName("");
       setSelectedColor("");
-      setIsEntry(category_type_default.value);
+      setIsEntry(undefined);
 
       closeModal();
     })
@@ -105,8 +91,7 @@ const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
 
           <label htmlFor={type_id}>Tipo</label>
           <Select 
-            defaultValue={category_type_default}
-            options={category_types}
+            options={[ { label: "Entrada", value: true }, { label: "Saida", value: false }]}
             styles={selectStyle}
             onChange={(value)=>setIsEntry(value?.value)}
           />

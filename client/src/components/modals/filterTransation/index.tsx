@@ -5,21 +5,38 @@ import { modalStyle } from "../modalStyle";
 import { AiOutlineClose } from "react-icons/ai";
 import Select from "react-select";
 import { selectStyle } from "../selectStyle";
-import { FormEvent, useId, useState } from "react";
+import { FormEvent, useEffect, useId, useState } from "react";
 import moment, { Moment } from "moment";
 import Submit from "../../submit";
+import useCategory from "../../../hooks/useCategory";
+import TransationFilterType from "../../../types/transationFilter";
 
 type props = {
   isOpen: boolean,
   closeModal: ()=> void,
-  categories: CategoryType[],
-  setFilterOptions: (categories: CategoryType[], min_date: Moment | undefined, max_date: Moment | undefined, value: number | undefined) => void
+  setFilterOptions: (options: TransationFilterType) => void
 }
-const FilterTransation = ({isOpen, closeModal, categories, setFilterOptions}: props) => {
+const FilterTransation = ({isOpen, closeModal, setFilterOptions}: props) => {
+  // categorias 
+  const { getCategories } = useCategory();
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+
+  useEffect(()=>{
+    getCategories()
+    .then(res => {
+      setCategories(res);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }, [])
+  
+  // IDs
   const category_id = useId();
   const value_id = useId();
   const date_id = useId();
-
+  
+  // filter
   const [filterCategories, setFilterCategories] = useState<CategoryType[]>([]);
   const [filterValue, setFilterValue] = useState<number>(0);
   const [filterMinDate, setFilterMinDate] = useState<Moment>();
@@ -27,7 +44,15 @@ const FilterTransation = ({isOpen, closeModal, categories, setFilterOptions}: pr
 
   const sendForm = (e: FormEvent)=>{
     e.preventDefault();
-    setFilterOptions(filterCategories, filterMinDate, filterMaxDate, filterValue);
+
+    const options: TransationFilterType = {};
+
+    if(filterValue && filterValue !== 0) options.value = filterValue;
+    if(filterCategories && filterCategories.length > 0) options.categories = filterCategories;
+    if(filterMinDate && filterMinDate.isValid()) options.min_date = filterMinDate;
+    if(filterMaxDate && filterMaxDate.isValid()) options.max_date = filterMaxDate;
+
+    setFilterOptions(options);
     closeModal();
   }
   return(
@@ -45,10 +70,10 @@ const FilterTransation = ({isOpen, closeModal, categories, setFilterOptions}: pr
           <label htmlFor={category_id}>Categorias:</label>
           <Select 
             id={category_id}
-            defaultValue={filterCategories.map(category => ({label: category.name, value: category}))}
             options={categories.map(category => ({label: category.name, value: category}))}
             styles={selectStyle}
             isMulti
+            value={filterCategories.map(category => ({label: category.name, value: category}))}
             onChange={(selects)=> setFilterCategories(selects.map(item => item.value))}
           />
           <label htmlFor={value_id}>Valor(R$):</label>

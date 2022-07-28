@@ -3,23 +3,21 @@ import {BiAddToQueue} from "react-icons/bi";
 import CategoryTable from "../../../../components/categoryTable";
 import Header from "../../../../components/header";
 import AddCategory from "../../../../components/modals/addCategoty";
-import useAuth from "../../../../hooks/useAuth";
 import useCategory from "../../../../hooks/useCategory";
 import CategoryType from "../../../../types/category";
 
 import pageStyle from "../pages.module.css";
-import styles from "./category.module.css";
 
-const Category = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const openModal = ()=> setIsOpen(true);
-  const closeModal = ()=> setIsOpen(false);
+const Category = () => {  
+  const { getCategories } = useCategory();
+
+  const [addIsOpen, setAddIsOpen] = useState<boolean>(false);
+  const openAddModal = () => setAddIsOpen(true);
+  const closeAddModal = () => setAddIsOpen(false);
 
   const [categories, setCategories] = useState<CategoryType[]>([]);
 
-  const { getCategories } = useCategory();
-  
-  useEffect(()=> {
+  const searchCategories = () => {
     getCategories()
     .then(res => {
       setCategories(res);
@@ -27,7 +25,11 @@ const Category = () => {
     .catch(error=>{
       console.log(error);
     })
+  }
+  useEffect(()=> {
+    searchCategories();
   }, [])
+
   return(
     <div>
       <Header title="Categoria"/>
@@ -36,13 +38,20 @@ const Category = () => {
           <h3>Categorias</h3>
           <button 
             className={pageStyle.button}
-            onClick={()=> openModal()}
+            onClick={()=> openAddModal()}
           >Criar <BiAddToQueue /></button>
         </div>
-        <CategoryTable categories={categories}/>
+        <CategoryTable 
+          categories={categories} 
+          onChange={searchCategories} 
+        />
       </div>
       {/* MODAL */}
-      <AddCategory isOpen={isOpen} closeModal={closeModal} setCategories={setCategories}/>
+      <AddCategory 
+        isOpen={addIsOpen} 
+        closeModal={closeAddModal} 
+        setCategories={setCategories}
+      />
       {/* END MODAL */}
     </div>
   )

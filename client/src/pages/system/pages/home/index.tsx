@@ -45,11 +45,17 @@ const getTransationsSum = (transations: TransationType[]) => {
 }
 
 const Home = () => {
-  const { getAllTransations, getFilteredTransations } = useTransation(); 
+  const { getAllTransations, getFilteredTransations } = useTransation();  
 
   // todas transações
   const [allTransations, setAllTransations] = useState<TransationType[]>([]);
-  useEffect(()=>{
+
+  // transações filtradas
+  const [filteredTransations, setFilteredTransations] = useState<TransationType[]>([]);
+  const [transationFilter, setTransationFilter] = useState<number | undefined>(7);
+
+  // pega todas transações
+  const fetchTransations = () => {
     getAllTransations()
     .then(res => {
       setAllTransations(res);
@@ -57,12 +63,9 @@ const Home = () => {
     .catch(err=>{
       console.log(err);
     })
-  }, []);
-  
-  // transações filtradas
-  const [filteredTransations, setFilteredTransations] = useState<TransationType[]>([]);
-  const [transationFilter, setTransationFilter] = useState<number | undefined>(7);
-  useEffect(()=>{
+  }
+  // pega transações filtradas por data
+  const fetchTransationsByDate = () => {
     getFilteredTransations({min_date: moment().subtract(transationFilter, "days")})
     .then(res => {
       setFilteredTransations(res);
@@ -70,12 +73,23 @@ const Home = () => {
     .catch(err=>{
       console.log(err);
     })
+  }
+  
+  useEffect(()=>{
+    fetchTransations();
+  }, []);
+
+  useEffect(()=>{
+    fetchTransationsByDate();
   }, [transationFilter]);
 
+  const updateTransations = ()=>{
+    fetchTransations();
+    fetchTransationsByDate();
+  }
   const entry_sum = getTransationsSum(allTransations.filter(t=> t.category.is_entry));
   const exit_sum = getTransationsSum(allTransations.filter(t=> !t.category.is_entry));
   const total = entry_sum + exit_sum;
-
   return(
     <div>
       <Header title="Inicio"/>
@@ -105,7 +119,7 @@ const Home = () => {
             />
           </div>
           <div>
-            <TransationTable transatios={filteredTransations} />
+            <TransationTable transatios={filteredTransations} onChange={updateTransations} />
           </div>
         </div>
         {/* END TRANSATIONS TABLE */}

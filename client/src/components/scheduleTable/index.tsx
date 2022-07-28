@@ -29,6 +29,7 @@ const ScheduleTable = ({transatios}: props) => {
           {
             transatios.map((transation, index) =>{
               const {name, category, value, execution} = transation;
+              console.log(category);
               return(
                 <tr key={index}>
                   <td style={{textAlign: "left"}}>{name}</td>

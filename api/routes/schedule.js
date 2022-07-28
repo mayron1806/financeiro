@@ -32,8 +32,7 @@ router.get("/", async (req, res)=>{
 
     const schedules = await scheduleModel
     .find({user: user_id})
-    .populate("category", "name is_entry")
-    .select({__v : 0});
+    .populate({path: "category"});
 
     res.status(200).json(schedules);
   }catch(error){

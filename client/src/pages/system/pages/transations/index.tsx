@@ -1,4 +1,3 @@
-import { Moment } from "moment";
 import { useEffect, useState } from "react";
 import { BiAddToQueue } from "react-icons/bi";
 import {FaFilter} from "react-icons/fa";
@@ -8,16 +7,15 @@ import FilterTransation from "../../../../components/modals/filterTransation";
 import Search from "../../../../components/search";
 import TransationCount from "../../../../components/transationCount";
 import TransationTable from "../../../../components/transationTable";
-import useAuth from "../../../../hooks/useAuth";
-import useCategory from "../../../../hooks/useCategory";
 import useTransation from "../../../../hooks/useTransation";
-import CategoryType from "../../../../types/category";
 import TransationType from "../../../../types/transation";
 import TransationFilterType from "../../../../types/transationFilter";
 import pageStyle from "../pages.module.css";
 import styles from "./transations.module.css";
 
 const Transations = () => {
+  const { getFilteredTransations } = useTransation();
+
   // modals 
   const [addIsOpen, setAddIsOpen] = useState<boolean>(false);
   const openAddModal = ()=> setAddIsOpen(true);
@@ -27,81 +25,36 @@ const Transations = () => {
   const openFilterModal = () => setFilterIsOpen(true);
   const closeFilterModal = () => setFilterIsOpen(false);
 
+  // transations
   const [transations, setTransations] = useState<TransationType[]>([]);
-  const [categories, setCategories] = useState<CategoryType[]>([]);
-
-  // db
-  const { getFilteredTransations } = useTransation();
-  const { getCategories } = useCategory();
 
   // filter
   const [nameFilter, setNameFilter] = useState<string>("");
-  const [valueFilter, setValueFilter] = useState<number>();
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [minDateFilter, setMinDateFilter] = useState<Moment>();
-  const [maxDateFilter, setMaxDateFilter] = useState<Moment>();
+  const [filter, setFilter] = useState<TransationFilterType>({} as TransationFilterType);
 
-  const [needUpdate, setNeedUpdate] = useState<boolean>(true);
+  const fetchTransations = ()=>{
+    const options = {...filter, name: nameFilter};
 
-  useEffect(()=>{
-    if(!needUpdate) return;
-    const options: TransationFilterType = {};
-
-    if(nameFilter && nameFilter.length > 0) options.name = nameFilter;
-    if(valueFilter && valueFilter !== 0) options.value = valueFilter;
-    if(categoryFilter && categoryFilter.length > 0) options.categories = categoryFilter;
-    if(minDateFilter && minDateFilter.isValid()) options.min_date = minDateFilter;
-    if(maxDateFilter && maxDateFilter.isValid()) options.max_date = maxDateFilter;
-    
-    // pega transações
+    // pega transações por filtro
     getFilteredTransations(options)
     .then(res => {
       setTransations(res);
     })
-    .catch(error=>{
-      console.log(error);
-    })
-    .finally(()=>{
-      setNeedUpdate(false);
-    })
-  }, [nameFilter, valueFilter, categoryFilter, minDateFilter, maxDateFilter, needUpdate])
-
-  // pega categorias
+    .catch(error => console.log(error))
+  }
   useEffect(()=>{
-    getCategories()
-    .then(res => {
-      setCategories(res);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  }, [])
+    fetchTransations();
+  }, [filter])
 
-  const setFilterOptions = (
-    categories: CategoryType[], 
-    min_date: Moment | undefined, 
-    max_date: Moment | undefined, 
-    value: number | undefined
-    ) => {
-      setCategoryFilter(categories.map(category=> category._id ?? ""));
-      setMinDateFilter(min_date);
-      setMaxDateFilter(max_date);
-      setValueFilter(value);
-      
-      setNeedUpdate(true);
-  }
-
-  const updateNameFilter = (e: HTMLInputElement) => {
-    setNameFilter(e.value);
-    setNeedUpdate(true);
-  }
+  const setFilterOptions = (options: TransationFilterType) => setFilter(options);
+  
   return(
     <div>
     <Header title="Transações"/>
     <div className={pageStyle.content}>
       <div className={pageStyle.head}>
         <div className={styles.search}>
-          <Search value={nameFilter} onchange={updateNameFilter}/>
+          <Search value={nameFilter} onchange={(e: HTMLInputElement) => setNameFilter(e.value)}/>
           <button 
             className={pageStyle.button} 
             onClick={()=> openFilterModal()}
@@ -114,23 +67,21 @@ const Transations = () => {
           onClick={()=> openAddModal()}
         >Criar <BiAddToQueue /></button>
       </div>
-      <TransationTable transatios={transations}/>
-      <TransationCount transations={transations}/>
+      <TransationTable transatios={transations} onChange={fetchTransations}/>
+      <TransationCount transations={transations} />
     </div>
     {/* MODALS */}
     <AddTransation 
       isOpen={addIsOpen} 
       closeModal={closeAddModal} 
-      categories={categories}
+      onAdd={fetchTransations}
     />
     <FilterTransation 
-      setFilterOptions={setFilterOptions}
       isOpen={filterIsOpen} 
       closeModal={closeFilterModal} 
-      categories={categories}
+      setFilterOptions={setFilterOptions}
     />
     {/* END MODALS */}
-
   </div>
   )
 }

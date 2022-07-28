@@ -5,11 +5,33 @@ import { BiEdit } from "react-icons/bi";
 import { BsSafe } from "react-icons/bs";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment";
+import { useState } from "react";
+import UpdateTransation from "../modals/updateTransation";
+import useTransation from "../../hooks/useTransation";
 
 type props = {
-  transatios: TransationType[]
+  transatios: TransationType[],
+  onChange: () => void
 }
-const TransationTable = ({transatios}: props) => {
+const TransationTable = ({transatios, onChange}: props) => {
+  const { deleteTransation } = useTransation();
+  
+  const [selectedTransation, setSelectedTransation] = useState<TransationType>();
+  
+  const [updateIsOpen, setUpdateIsOpen] = useState<boolean>(false);
+  const openUpdateModal = () => setUpdateIsOpen(true); 
+  const closeUpdateModal = () => setUpdateIsOpen(false); 
+
+  const del = (transation: TransationType)=>{
+    deleteTransation([transation])
+    .then(res=>{
+      onChange();
+    })  
+    .catch(error=>{
+      console.log(error.message)
+    })
+  }
+  
   return(
     <div>
       <table className={styles.table}>
@@ -25,23 +47,28 @@ const TransationTable = ({transatios}: props) => {
         </thead>
         <tbody>
           {
-            transatios.map((transation, index) =>{
-              const {name, category, date, value} = transation;
+            transatios.map(transation =>{
+              const {name, category, date, value, _id} = transation;
               return(
-                <tr key={index}>
+                <tr key={_id}>
                   <td style={{textAlign: "left"}}>{name}</td>
-                  <td style={formatColorNumbers(value)}>
-                    {formatMoney(value)}
-                  </td>
+                  <td style={formatColorNumbers(value)}>{formatMoney(value)}</td>
                   <td>
                     <span 
                       className={styles.category} 
                       style={{backgroundColor: category.color}}
                     >{category.name}</span>
                   </td>
-                  <td>{moment(date).add(1, "d").format("DD/MM/YYYY")}</td>
-                  <td className={styles.icon}><BiEdit /></td>
-                  <td className={styles.icon}><AiOutlineClose /></td>
+                  <td>{moment(date).format("DD/MM/YYYY")}</td>
+                  <td className={styles.icon}>
+                    <BiEdit onClick={() => {
+                      setSelectedTransation(transation);
+                      openUpdateModal();
+                    }} />
+                  </td>
+                  <td className={styles.icon}>
+                    <AiOutlineClose onClick={()=> del(transation)}/>
+                    </td>
                 </tr>
               )
             })
@@ -55,8 +82,16 @@ const TransationTable = ({transatios}: props) => {
             <p>Não há categorias neste periodo.</p>
           </div>
         }
+        {
+          selectedTransation !== undefined &&
+          <UpdateTransation 
+            isOpen={updateIsOpen}
+            closeModal={closeUpdateModal}
+            transationToUpdate={selectedTransation}
+            onUpdate={onChange}
+          />
+        }
     </div>
-    
   )
 }
 export default TransationTable;
