@@ -5,6 +5,7 @@ import SideBar from "../../components/sidebar";
 import styles from "./system.module.css";
 import Transations from "./pages/transations";
 import Schedule from "./pages/schedule";
+import Help from "./pages/help";
 const System = () => {
   const { tab } = useParams();
 
@@ -23,7 +24,7 @@ const System = () => {
         return (<Category />);
 
       case "help":
-        return (<Category />);
+        return (<Help />);
 
       default:
         return (<Home />);
