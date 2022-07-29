@@ -15,11 +15,11 @@ import ScheduleTransationType from "../../../types/scheduleTransations";
 
 type props = {
   isOpen: boolean,
-  closeModal: ()=> void,
-  setSchedules: Dispatch<React.SetStateAction<ScheduleTransationType[]>>
+  closeModal: () => void,
+  onAdd: () => void
 }
-const AddSchedule = ({isOpen, closeModal, setSchedules}: props) => {
-  const { addScheduleTransation } = useSchedule();
+const AddSchedule = ({isOpen, closeModal, onAdd}: props) => {
+  const { createSchedule } = useSchedule();
 
   //IDs
   const name_id = useId();
@@ -70,10 +70,8 @@ const AddSchedule = ({isOpen, closeModal, setSchedules}: props) => {
       }
     } 
     setIsCreating(true);
-    addScheduleTransation(schedule)
+    createSchedule(schedule)
     .then(res => {
-      setSchedules(res);
-      
       //reset 
       setTransationName("");
       setTransationCategory(undefined);
@@ -81,7 +79,8 @@ const AddSchedule = ({isOpen, closeModal, setSchedules}: props) => {
       setRepeatCount(0);
       setTransationValue(0);
 
-      // fecha modal
+      onAdd();
+      
       closeModal();
     })
     .catch(err => {

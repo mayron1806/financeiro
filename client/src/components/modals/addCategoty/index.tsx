@@ -13,9 +13,9 @@ import color_options from "../../../style/colorOptions";
 type props = {
   isOpen: boolean,
   closeModal: ()=> void,
-  setCategories: Dispatch<React.SetStateAction<CategoryType[]>>
+  onAdd: () => void
 }
-const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
+const AddCategory = ({isOpen, closeModal, onAdd}: props) => {
   const { createCategory } = useCategory();
   // IDs
   const name_id = useId();
@@ -53,13 +53,13 @@ const AddCategory = ({isOpen, closeModal, setCategories}: props) => {
     setIsCreating(true);
     createCategory(new_category)
     .then(res => {
-      setCategories(res);
-      
       // reset form
       setCategoryName("");
       setSelectedColor("");
       setIsEntry(undefined);
 
+      onAdd();
+      
       closeModal();
     })
     .catch(error => {

@@ -8,13 +8,13 @@ export const getAll = async(user_id: string) => {
   });
 }
 export const create = async(user_id: string, options: ScheduleTransationType)=>{
-  return await client.post<ScheduleTransationType[]>("/schedule", 
+  return await client.post<ScheduleTransationType>("/schedule", 
     {
       name: options.name,
       value: options.value,
-      category: options.category,
+      category_id: options.category,
       next: options.execution.next_date,
-      n_executions: options.execution.max
+      max: options.execution.max
     },
     { headers: { "User-ID": user_id } }
   );

@@ -8,7 +8,7 @@ const useSchedule = () => {
   const { authContext } = useAuth();
   const user_id = authContext.user?.id;
 
-  const getScheduleTransations = async () => {
+  const getSchedules = async () => {
     let transations : ScheduleTransationType[] = []; 
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
@@ -30,13 +30,12 @@ const useSchedule = () => {
     }
     return transations;
   } 
-  const addScheduleTransation = async (schedule: ScheduleTransationType) => {
-    let schedules : ScheduleTransationType[] = [];
+  const createSchedule = async (schedule: ScheduleTransationType) => {
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
     }
     try{
-      schedules = (await scheduleAPI.create(user_id, schedule)).data;
+      await scheduleAPI.create(user_id, schedule);
     } 
     catch(error){
       if(!axios.isAxiosError(error) || !error.response){
@@ -48,7 +47,6 @@ const useSchedule = () => {
         throw new Error(message + status.toString());
       }
     }
-    return schedules;
   }
   const updateSchedule = async (options: ScheduleTransationUpdateType) => {
     if(!user_id){
@@ -71,7 +69,7 @@ const useSchedule = () => {
       }
     }
   }
-  const deleteSchedule = async (schedules: ScheduleTransationType[] ) =>{
+  const deleteSchedules = async (schedules: ScheduleTransationType[]) =>{
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
     }
@@ -92,6 +90,6 @@ const useSchedule = () => {
       }
     }
   }
-  return {getScheduleTransations, addScheduleTransation, updateSchedule, deleteSchedule}
+  return {getSchedules, createSchedule, updateSchedule, deleteSchedules}
 }
 export default useSchedule;

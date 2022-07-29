@@ -2,7 +2,9 @@ const router = require("express").Router();
 const moment = require("moment");
 const validateUserID = require("../middlewares/validateUserID");
 const categoryModel = require("../models/category");
-const scheduleModel = require("../models/schedule");
+const scheduleModel = require("../models/schedule");  
+const transationModel = require("../models/transation");
+const { getDateFromString } = require("../utils/date");
 
 // midleware
 router.use(validateUserID);
@@ -84,45 +86,38 @@ router.post("/", async (req, res)=>{
   try{
     const user_id = req.user_id;
 
-    const {name, value, category, next, n_executions: max} = req.body;
-    if(!name || !value || !category) return res.status(404).json({error: "Name, value or category not found"});
+    const {name, value, category_id, next, max} = req.body;
+    if(!name || !value || !category_id) return res.status(404).json({error: "Name, value or category not found"});
     
-    let next_date = new Date(moment().toISOString().slice(0, 10));
-    if(next && moment(next) >= moment()){
-      const moment_date = moment(next, "YYYY-MM-DD").toDate();
-      const date_string = moment_date.toISOString().slice(0, 10);
-      next_date = new Date(date_string);
-    }
-
-    // verifica se a categoria existe
-    const category_db = await categoryModel.findById(category);
-    if(!category_db) return res.status(404).json("Category not found");
-
-    // formata valor da transação de acordo com o tipo da categoria
-    const formated_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
-
     // verifica se o nome esta sendo usado
     const doc_using_name = await scheduleModel.findOne({user: user_id, name: name});
     if(doc_using_name) return res.status(409).json({error: "Name has been used"});
 
+    // verifica se a categoria existe
+    const category_db = await categoryModel.findById(category_id);
+    if(!category_db) return res.status(404).json("Category not found");
+
+    // define a proxima data para o dia atual
+    let next_date = new Date(moment().toISOString().slice(0, 10));
+    // se foi passada uma data e ela é maior que a atual, next_date sera reatribuida
+    if(next && moment(next) >= moment()) next_date = getDateFromString(next);
+
+    // formata valor da transação de acordo com o tipo da categoria
+    const formated_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
+
     const new_schedule = {
       name, 
       value : formated_value, 
-      category,
+      category: category_id,
       user: user_id,
       execution: {
         next_date, 
         max
       }
     }
-    await scheduleModel.create(new_schedule);
-
-    // pega as transações agendadas
-    const schedules = await scheduleModel
-      .find({user_id: user_id})
-      .populate("category", "name is_entry");
     
-    res.status(200).json(schedules);
+    const schedule = await scheduleModel.create(new_schedule);
+    res.status(200).json(schedule);
   }catch(error){
     res.status(400).json("Catch: " + error);
   }
@@ -132,9 +127,13 @@ router.put("/", async (req, res)=>{
   try{
     const user_id = req.user_id;
     const {schedule_id, name, value, category_id, next, max} = req.body;
+    
     const schedule = await scheduleModel.findById(schedule_id);
     if(!schedule) return res.status(404).json({error: "Schedule not found"});
     
+    // verifica se quem está tentando atualizar é o criador da categoria
+    if(schedule.user != user_id) return res.status(401).json("User can`t edit this category.");
+
     // verifica se a data e menor que a data atual
     if(next){
       const current_date = moment();
@@ -167,7 +166,7 @@ router.put("/", async (req, res)=>{
     }
     const new_schedule = {
       name, 
-      value,
+      value: new_value,
       category: category_id,
       execution: {
         next_date: next,

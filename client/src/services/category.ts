@@ -7,7 +7,7 @@ import client from "./axios"
 const category_url = "/category";
 
 export const createCategory = async (user_id: string, category: CategoryType)=>{
-  return await client.post<CategoryType[]>(category_url, {
+  return await client.post<CategoryType>(category_url, {
     name: category.name,
     is_entry: category.is_entry,
     color: category.color

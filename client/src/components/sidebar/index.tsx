@@ -2,13 +2,12 @@ import styles from "./sidebar.module.css";
 import {FiLogOut} from "react-icons/fi";
 import {AiFillHome, AiFillSchedule} from "react-icons/ai";
 import {MdOutlineAttachMoney, MdCategory} from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import { BiHelpCircle } from "react-icons/bi";
 
-type props = {
-  tab: string | undefined
-}
-const SideBar = ({ tab }: props) => {
+const SideBar = () => {
+  const { tab } = useParams();
   const navegate = useNavigate();
   const { signOut, authContext } = useAuth();
 
@@ -50,6 +49,12 @@ const SideBar = ({ tab }: props) => {
               <Link to={"/category"}>
                 <MdCategory />
                 Categorias
+              </Link>
+            </li>
+            <li className={isActiveMenu("help")}>
+              <Link to={"/help"}>
+                <BiHelpCircle />
+                Ajuda
               </Link>
             </li>
           </ul>

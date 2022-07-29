@@ -6,21 +6,16 @@ import TransationUpdateType from "../types/transationUpdate";
 import client from "./axios"
 
 const transation_url = "/transation";
-export const getAll = async (user_id: string) => {
-  return await client.get<TransationType[]>(transation_url, {
-    headers: {"User-ID": user_id}
-  });
-}
-export const getWithFilter = async (user_id: string, options: TransationFilterType) => {
+export const getTransation = async (user_id: string, options?: TransationFilterType) => {
   return await client.get<TransationType[]>(transation_url, {
     headers: {"User-ID": user_id},
     params: {
-      name: options.name,
-      value: options.value,
-      categories: options.categories?.map(category => category._id),
-      is_entry: options.is_entry,
-      min_date: options.min_date,
-      max_date: options.max_date
+      name: options?.name,
+      value: options?.value,
+      categories: options?.categories?.map(category => category._id),
+      is_entry: options?.is_entry,
+      min_date: options?.min_date,
+      max_date: options?.max_date
     }
   })
 }

@@ -14,7 +14,7 @@ type props = {
   onChange: () => void
 }
 const TransationTable = ({transatios, onChange}: props) => {
-  const { deleteTransation } = useTransation();
+  const { deleteTransations } = useTransation();
   
   const [selectedTransation, setSelectedTransation] = useState<TransationType>();
   
@@ -23,7 +23,7 @@ const TransationTable = ({transatios, onChange}: props) => {
   const closeUpdateModal = () => setUpdateIsOpen(false); 
 
   const del = (transation: TransationType)=>{
-    deleteTransation([transation])
+    deleteTransations([transation])
     .then(res=>{
       onChange();
     })  

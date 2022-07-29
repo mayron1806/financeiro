@@ -15,10 +15,10 @@ type props = {
   onChange: ()=> void
 }
 const ScheduleTable = ({ schedules, onChange}: props) => {
-  const { deleteSchedule } = useSchedule();
+  const { deleteSchedules } = useSchedule();
   const del = (schedule: ScheduleTransationType)=>{
     if(!schedule._id) return;
-    deleteSchedule([schedule])
+    deleteSchedules([schedule])
     .then(res => {  
       onChange();
     })

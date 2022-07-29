@@ -22,13 +22,16 @@ const System = () => {
       case "category":
         return (<Category />);
 
+      case "help":
+        return (<Category />);
+
       default:
         return (<Home />);
     }
   }
   return(
     <div className={styles.container}>
-      <SideBar tab={tab}/>
+      <SideBar />
       <main className={styles.content}>
         {renderScreen()}
       </main>

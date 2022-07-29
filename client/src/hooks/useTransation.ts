@@ -10,37 +10,14 @@ import useAuth from "./useAuth";
 const useTransation = ()=>{
   const { authContext } = useAuth();
   const user_id = authContext.user?.id;
-  
-  const getAllTransations = async ()=>{
-    let transations : TransationType[] = []; 
-    if(!user_id){
-      throw new Error("Você precisa estar logado para acessar suas transações.");
-    }
-    try{
-      transations = (await transationsAPI.getAll(user_id)).data;
-    }
-    catch(error){
-      if(!axios.isAxiosError(error) || !error.response){
-        throw new Error("Erro no servidor, tente novamente mais tarde.");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 404 && (message === "User id not found" || message === "User not found")){
-          throw new Error("Transações não encontradas, tente realizar o login novamente.");
-        }
-      }
-    }
-    return transations;
-  }
-  
-  const getFilteredTransations = async (options: TransationFilterType) => {
+
+  const getTransations = async (options?: TransationFilterType) => {
     let transations: TransationType[] = [];
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
     }
     try{
-      transations = (await transationsAPI.getWithFilter(user_id, options)).data;
+      transations = (await transationsAPI.getTransation(user_id, options)).data;
     } 
     catch(error){
       console.log(error);
@@ -57,7 +34,6 @@ const useTransation = ()=>{
     }
     return transations;
   }
- 
   const createTransation = async (transation: TransationType) => {
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
@@ -79,7 +55,6 @@ const useTransation = ()=>{
       }
     }
   }
-
   const updateTransation = async (options: TransationUpdateType) => {
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
@@ -101,7 +76,7 @@ const useTransation = ()=>{
       }
     }
   }
-  const deleteTransation = async (transations: TransationType[]) => {
+  const deleteTransations = async (transations: TransationType[]) => {
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
     }
@@ -122,6 +97,6 @@ const useTransation = ()=>{
       }
     }
   }
-  return { getAllTransations, getFilteredTransations, createTransation, updateTransation, deleteTransation };
+  return { getTransations, createTransation, updateTransation, deleteTransations };
 }
 export default useTransation;

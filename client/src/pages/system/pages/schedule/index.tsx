@@ -12,13 +12,13 @@ const Schedule = () => {
   const openModal = ()=> setAddScheduleIsOpen(true);
   const closeModal = ()=> setAddScheduleIsOpen(false);
 
-  const { getScheduleTransations } = useSchedule();
-  const [scheduleTransatios, setScheduleTransatios] = useState<ScheduleTransationType[]>([]);
+  const { getSchedules } = useSchedule();
+  const [schedules, setSchedules] = useState<ScheduleTransationType[]>([]);
 
   const fetchSchedules = ()=>{
-    getScheduleTransations()
+    getSchedules()
     .then(res=>{
-      setScheduleTransatios(res);
+      setSchedules(res);
     })
     .catch(error=>{
       console.log(error);
@@ -39,13 +39,13 @@ const Schedule = () => {
           </button>
         </div>
         <div>
-          <ScheduleTable schedules={scheduleTransatios} onChange={fetchSchedules}/>
+          <ScheduleTable schedules={schedules} onChange={fetchSchedules}/>
         </div>
       </div>
       <AddSchedule 
         isOpen={addScheduleIsOpen} 
         closeModal={closeModal} 
-        setSchedules={setScheduleTransatios}
+        onAdd={fetchSchedules}
       />
     </div>
   )

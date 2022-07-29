@@ -3,17 +3,18 @@ const moment = require("moment");
 const validateUserID = require("../middlewares/validateUserID");
 const transationModel = require("../models/transation");
 const categoryModel = require("../models/category");
+const { getDateFromString } = require("../utils/date");
 router.use(validateUserID);
 
 const validateDate = (req, res, next)=>{
-    const date = req.body.date;
-    if(!date) return res.status(404).json("Date not found");
+  const date = req.body.date;
+  if(!date) return res.status(404).json("Date not found");
 
-    const date_formated = moment(date);
-    const date_is_valid = moment(date_formated, "YYYY-MM-DD", true).isValid();
-    if(!date_is_valid) return res.status(400).json("Date format invalid");
+  const date_formated = moment(date);
+  const date_is_valid = moment(date_formated, "YYYY-MM-DD", true).isValid();
+  if(!date_is_valid) return res.status(400).json("Date format invalid");
 
-    next();
+  next();
 }
 // pega transações por usuario
 router.get("/", async (req,res) => {
@@ -24,20 +25,8 @@ router.get("/", async (req,res) => {
     .find({user: user_id});
 
     // DATE FILTER
-    if(min_date) {
-      const moment_min_date = moment(min_date, "YYYY-MM-DD").toDate();
-      const string_min_date = new Date(moment_min_date).toISOString().slice(0, 10);
-      const final_min_date = new Date(string_min_date);
-      
-      query.find({date: {$gte: final_min_date}});
-    }
-    if(max_date) {
-      const moment_max_date = moment(max_date, "YYYY-MM-DD").toDate();
-      const string_max_date = new Date(moment_max_date).toISOString().slice(0, 10);
-      const final_max_date = new Date(string_max_date);
-      
-      query.find({date: {$lte: final_max_date}});
-    }
+    if(min_date) query.find({date: {$gte: getDateFromString(min_date)}});
+    if(max_date) query.find({date: {$lte: getDateFromString(max_date)}});
     
     // NAME FILTER
     if(name && name.length > 0) query.find({name: new RegExp(name)});
@@ -52,8 +41,7 @@ router.get("/", async (req,res) => {
     if(typeof(is_entry) === "boolean"){
       query.populate({
         path: "category", 
-        match: {is_entry: is_entry},
-        select: {name: 1, is_entry: 1}
+        match: {is_entry: is_entry}
       })
     }
     query.populate({path: "category"})
@@ -74,8 +62,8 @@ router.post("/", validateDate, async (req,res)=>{
       const user_id = req.user_id;
       const {name, value, category, date} = req.body;
       
-      if(!name || !value || !category || !date){
-        return res.status(404).json("Name, value, category or date not found.");
+      if(!name || !value || !category){
+        return res.status(404).json("Name, value, category not found.");
       }
 
       const current_date = moment();

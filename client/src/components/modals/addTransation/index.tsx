@@ -56,6 +56,7 @@ const AddTransation = ({isOpen, closeModal, onAdd}: props) => {
     if(transationName.length < 3 || transationName.length > 20) return setError("O nome da transação deve ter entre 3 e 20 caracteres.");
     if(transationValue === 0 || isNaN(transationValue)) return setError("Você precisa definir um valor para a transação.");
     if(!transationCategory) return setError("Defina uma categoria para a transação.");
+    if(!transationDate) return setError("Você precisa definir uma data para essa transação.");
     if(moment(transationDate) > moment()) return setError("A data deve ser no maximo ate o dia de hoje.");
     
     setError("");

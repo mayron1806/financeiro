@@ -50,7 +50,7 @@ const Category = () => {
       <AddCategory 
         isOpen={addIsOpen} 
         closeModal={closeAddModal} 
-        setCategories={setCategories}
+        onAdd={searchCategories}
       />
       {/* END MODAL */}
     </div>

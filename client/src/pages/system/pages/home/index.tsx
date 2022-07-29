@@ -45,7 +45,7 @@ const getTransationsSum = (transations: TransationType[]) => {
 }
 
 const Home = () => {
-  const { getAllTransations, getFilteredTransations } = useTransation();  
+  const { getTransations } = useTransation();  
 
   // todas transações
   const [allTransations, setAllTransations] = useState<TransationType[]>([]);
@@ -56,7 +56,7 @@ const Home = () => {
 
   // pega todas transações
   const fetchTransations = () => {
-    getAllTransations()
+    getTransations()
     .then(res => {
       setAllTransations(res);
     })
@@ -66,7 +66,7 @@ const Home = () => {
   }
   // pega transações filtradas por data
   const fetchTransationsByDate = () => {
-    getFilteredTransations({min_date: moment().subtract(transationFilter, "days")})
+    getTransations({min_date: moment().subtract(transationFilter, "days")})
     .then(res => {
       setFilteredTransations(res);
     })

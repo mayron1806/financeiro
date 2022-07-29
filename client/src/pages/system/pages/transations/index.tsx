@@ -14,7 +14,7 @@ import pageStyle from "../pages.module.css";
 import styles from "./transations.module.css";
 
 const Transations = () => {
-  const { getFilteredTransations } = useTransation();
+  const { getTransations } = useTransation();
 
   // modals 
   const [addIsOpen, setAddIsOpen] = useState<boolean>(false);
@@ -36,7 +36,7 @@ const Transations = () => {
     const options = {...filter, name: nameFilter};
 
     // pega transações por filtro
-    getFilteredTransations(options)
+    getTransations(options)
     .then(res => {
       setTransations(res);
     })

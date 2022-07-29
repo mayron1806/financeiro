@@ -29,12 +29,11 @@ const useCategory = () => {
     return categories;
   }
   const createCategory = async (category: CategoryType) => {
-    let categories: CategoryType[] = [];
     if(!user_id){
       throw new Error("Você precisa estar logado para acessar suas transações.");
     }
     try{
-      categories = (await categoryAPI.createCategory(user_id, category)).data;
+      await categoryAPI.createCategory(user_id, category);
     }
     catch(error){
       if(!axios.isAxiosError(error) || !error.response){
@@ -49,7 +48,6 @@ const useCategory = () => {
         throw new Error(message + status.toString());
       }
     }
-    return categories;
   }
   const updateCategory = async (options: CategoryUpdateType) => {
     if(!user_id){
