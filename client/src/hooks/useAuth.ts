@@ -28,19 +28,9 @@ const useAuth = ()=> {
       if(!axios.isAxiosError(error) || !error.response){
         res.message = "Erro ao efetuar login, tente novamente mais tarde.";
         res.status = 401;
-      }
-      else{
-        const status = error.response.status;
-        res.status = status;
-        if(status === 400){
-          res.message = "Nome ou senha incorretos.";
-        }
-        else if(status === 404){
-          res.message = "Usuario não encontrado.";
-        }
-        else{
-          res.message = "Erro ao efetuar login, tente novamente mais tarde.";
-        }
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
     return res;
@@ -62,16 +52,9 @@ const useAuth = ()=> {
       if(!axios.isAxiosError(error) || !error.response){
         res.message = "Erro ao efetuar login, tente novamente mais tarde.";
         res.status = 401;
-      }
-      else{
-        const status = error.response.status;
-        res.status = status;
-        if(status === 400){
-          res.message = "Nome de usuario já está em uso.";
-        }
-        else{
-          res.message = "Erro ao efetuar login, tente novamente mais tarde.";
-        }
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
     return res;

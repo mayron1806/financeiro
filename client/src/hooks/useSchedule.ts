@@ -40,11 +40,9 @@ const useSchedule = () => {
     catch(error){
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde.");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        throw new Error(message + status.toString());
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
   }
@@ -58,14 +56,9 @@ const useSchedule = () => {
     catch(error){
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 409){
-          throw new Error("Esse nome de categoria já está em uso.");
-        }
-        throw new Error(message + status.toString());
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
   }
@@ -79,14 +72,9 @@ const useSchedule = () => {
     catch(error){
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 409){
-          throw new Error("Esse nome de categoria já está em uso.");
-        }
-        throw new Error(message + status.toString());
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
   }

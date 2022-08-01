@@ -21,7 +21,7 @@ const Help = () => {
           Exemplos de categoria: Entretenimento (saída), Renda extra (entrada).
         </p>
         <h4 className={style.title}>
-          <Link to="/category">Transações</Link>
+          <Link to="/transations">Transações</Link>
         </h4>
         <p className={style.text}>
           As transações são a parte principal do site, elas definir o dinheiro que entra 
@@ -32,7 +32,7 @@ const Help = () => {
           Exemplos de transações: cinema, conta de luz, salário, etc...
         </p>
         <h4 className={style.title}>
-          <Link to="/category">Transações agendadas</Link>
+          <Link to="/schedule">Transações agendadas</Link>
           </h4>
         <p className={style.text}>
         Essa é uma funcionalidade muito útil do financeiro, com ela você pode agendar transações 
