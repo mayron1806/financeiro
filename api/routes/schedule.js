@@ -47,7 +47,6 @@ router.post("/execute", async (req, res)=>{
         const user_id = req.user_id;
         // pega o gerenciador de transações do usuario
         const schedules = await scheduleModel.find({ user: user_id });
-        if(schedules.length == 0) return res.status(404).json({error: "User can`t schedules"})
         // percorre todas transações agendadas
         for(const [index, schedule] of schedules.entries()){
             // verifica se precisa criar mais uma transação
@@ -87,15 +86,15 @@ router.post("/", async (req, res)=>{
     const user_id = req.user_id;
 
     const {name, value, category_id, next, max} = req.body;
-    if(!name || !value || !category_id) return res.status(404).json({error: "Name, value or category not found"});
+    if(!name || !value || !category_id) return res.status(404).json("Alguns dados não foram passados correntamente, confira todos os campos do formulario.");
     
     // verifica se o nome esta sendo usado
     const doc_using_name = await scheduleModel.findOne({user: user_id, name: name});
-    if(doc_using_name) return res.status(409).json({error: "Name has been used"});
+    if(doc_using_name) return res.status(409).json({error: "O nome já está em uso."});
 
     // verifica se a categoria existe
     const category_db = await categoryModel.findById(category_id);
-    if(!category_db) return res.status(404).json("Category not found");
+    if(!category_db) return res.status(404).json("Categoria não encontrada.");
 
     // define a proxima data para o dia atual
     let next_date = new Date(moment().toISOString().slice(0, 10));
@@ -129,29 +128,29 @@ router.put("/", async (req, res)=>{
     const {schedule_id, name, value, category_id, next, max} = req.body;
     
     const schedule = await scheduleModel.findById(schedule_id);
-    if(!schedule) return res.status(404).json({error: "Schedule not found"});
+    if(!schedule) return res.status(404).json("Transação agendada não encontrada.");
     
     // verifica se quem está tentando atualizar é o criador da categoria
-    if(schedule.user != user_id) return res.status(401).json("User can`t edit this category.");
+    if(schedule.user != user_id) return res.status(401).json("Você não tem autorização para editar essa transação.");
 
     // verifica se a data e menor que a data atual
     if(next){
       const current_date = moment();
-      if(moment(next) < current_date) return res.status(400).json("You cannot update schedule for a date before than today.");
+      if(moment(next) < current_date) return res.status(400).json("Você não pode atualizar uma transaçãoa para um dia que ja passou.");
     }
 
     let category_db;
     if(category_id){
       // verifica se tem uma categoria com o id passado
       category_db = await categoryModel.findById(category_id);
-      if(!category_db) return res.status(404).json("Category not found");
+      if(!category_db) return res.status(404).json("Categoria não encontrada.");
     }
     else{
       const currentSchedule = await scheduleModel
       .findById(schedule_id)
       .populate({path: "category"})
       .select({category: 1});
-      if(!currentSchedule) return res.status(404).json("Transation not found");
+      if(!currentSchedule) return res.status(404).json("Transação não encontrada.");
       category_db = currentSchedule.category;
     }
 
@@ -187,7 +186,7 @@ router.delete("/", async (req,res)=>{
     
     const { schedules } = req.body;
     if(!schedules || schedules.length == 0) {
-      return res.status(404).json({error: "Schedules not found"});
+      return res.status(404).json("Transação agendada não encontrada.");
     }
     const deleted = await scheduleModel.deleteMany({_id: {$in: schedules}, user: user_id});
     res.status(200).json(deleted);

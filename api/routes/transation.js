@@ -63,12 +63,12 @@ router.post("/", validateDate, async (req,res)=>{
       const {name, value, category, date} = req.body;
       
       if(!name || !value || !category){
-        return res.status(404).json("Name, value, category not found.");
+        return res.status(404).json("Alguns dados não foram passados correntamente, confira todos os campos do formulario.");
       }
 
       const current_date = moment();
       if(moment(date) > current_date){
-        return res.status(400).json("You cannot add transations for a date after than today");
+        return res.status(400).json("Você não pode adicionar uma transação com data depois de hoje.");
       }
       // deixa a data com um formato padrão
       const moment_date = moment(date, "YYYY-MM-DD").toDate();
@@ -77,7 +77,7 @@ router.post("/", validateDate, async (req,res)=>{
 
       // verifica se tem uma categoria
       const category_db = await categoryModel.findById(category);
-      if(!category_db) return res.status(404).json("Category not found");
+      if(!category_db) return res.status(404).json("Esta categoria não existe.");
 
       // formata o valor da transação para o tipo da categoria
       const formated_value = category_db.is_entry ? Math.abs(value) : -Math.abs(value);
@@ -102,12 +102,12 @@ router.put("/", async (req, res) => {
     const {transation_id, name, category_id, value, date} = req.body;
     // verifica existe uma transação com o id passado
     const transation = await transationModel.findById(transation_id);
-    if(!transation) return res.status(404).json("Transation not found");
+    if(!transation) return res.status(404).json("Transação não encontrada.");
     console.log(category_id);
     // verifica se a data e maior que a data atual
     if(date){
       const current_date = moment();
-      if(moment(date) > current_date) return res.status(400).json("You cannot update transations for a date after than today");
+      if(moment(date) > current_date) return res.status(400).json("Você não pode adicionar uma transação com data depois de hoje.");
     }
 
     let category_db;
@@ -115,14 +115,14 @@ router.put("/", async (req, res) => {
     if(category_id){
       // verifica se tem uma categoria com o id passado
       category_db = await categoryModel.findById(category_id);
-      if(!category_db) return res.status(404).json("Category not found");
+      if(!category_db) return res.status(404).json("Esta categoria não existe.");
     }
     else{
       const currentTransation = await transationModel
       .findById(transation_id)
       .populate({path: "category"})
       .select({category: 1});
-      if(!currentTransation) return res.status(404).json("Transation not found");
+      if(!currentTransation) return res.status(404).json("Esta trasansação não existe.");
       category_db = currentTransation.category;
     }
     let new_value;
@@ -155,7 +155,7 @@ router.delete("/", async (req, res) => {
       const user_id = req.user_id;
       const { transations } = req.body;
       if(!transations || transations.length == 0){
-        return res.status(404).json("Transations not found");
+        return res.status(404).json("Esta transação não existe.");
       }
       const deleted = await transationModel.deleteMany({_id: {$in: transations}, user: user_id});
 

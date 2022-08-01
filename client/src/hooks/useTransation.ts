@@ -23,13 +23,9 @@ const useTransation = ()=>{
       console.log(error);
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde.");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 404 && (message === "User id not found" || message === "User not found")){
-          throw new Error("Transações não encontradas, tente realizar o login novamente.");
-        }
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
     return transations;
@@ -45,13 +41,9 @@ const useTransation = ()=>{
       console.log(error);
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde.");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 404 && (message === "User id not found" || message === "User not found")){
-          throw new Error("Transações não encontradas, tente realizar o login novamente.");
-        }
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
   }
@@ -66,13 +58,9 @@ const useTransation = ()=>{
       console.log(error);
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde.");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 404 && (message === "User id not found" || message === "User not found")){
-          throw new Error("Transações não encontradas, tente realizar o login novamente.");
-        }
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
   }
@@ -87,13 +75,9 @@ const useTransation = ()=>{
       console.log(error);
       if(!axios.isAxiosError(error) || !error.response){
         throw new Error("Erro no servidor, tente novamente mais tarde.");
-      }
-      else{
-        const status = error.response.status;
-        const message = error.response.data;
-        if(status === 404 && (message === "User id not found" || message === "User not found")){
-          throw new Error("Transações não encontradas, tente realizar o login novamente.");
-        }
+      }else{
+        const message = error.response.data as string;
+        throw new Error(message);
       }
     }
   }

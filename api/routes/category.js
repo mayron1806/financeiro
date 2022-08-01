@@ -65,14 +65,14 @@ router.put("/",validateCategoryName, async (req, res)=>{
 
     // vefifica se existe uma categoria com o id passado
     const category = await categoryModel.findById(category_id);
-    if(!category) return res.status(404).json("Category not found.");
+    if(!category) return res.status(404).json("Esta categoria não existe.");
 
     // verifica se quem está tentando atualizar é o criador da categoria
-    if(category.user != user_id) return res.status(401).json("User can`t edit this category.");
+    if(category.user != user_id) return res.status(401).json("Você não tem autorização para editar essa categoria.");
    
     // verifica se o nome está sendo usado
     const category_with_name = await categoryModel.findOne({name: name, user: user_id});
-    if(category_with_name) return res.status(409).json("Name has been used.");
+    if(category_with_name) return res.status(409).json("O nome ja está sendo usado.");
     
     // se a propriedade is_entry foi alterada, todas as transações da categoria serão atualizadas
     if(is_entry !== undefined && category.is_entry !== is_entry){
@@ -103,10 +103,10 @@ router.delete("/", async(req, res) => {
   try{
     const user_id = req.user_id;
     const { categories } = req.body;
-    if(!categories || categories.length === 0) return res.status(404).json("Categories not found");
+    if(!categories || categories.length === 0) return res.status(404).json("Esta categoria não existe.");
     
     const categories_to_delete = await categoryModel.find({_id: {$in: categories}, user: user_id});
-    if(categories_to_delete.length === 0) return res.status(200).json("No categories to delete");
+    if(categories_to_delete.length === 0) return res.status(200).json("Nenhuma categoria foi selecionada para ser deletada.");
     
     // deleta as transações da categoria
     categories_to_delete.forEach(async (category) => {
@@ -124,7 +124,7 @@ router.delete("/", async(req, res) => {
     res.status(200).json(deleted);
   }
   catch(error){
-    res.status(400).json("Catch: " + error)
+    res.status(400).json("Catch: " + error);
   }
 });
 module.exports = router;
