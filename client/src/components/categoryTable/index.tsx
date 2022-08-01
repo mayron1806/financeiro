@@ -4,23 +4,37 @@ import { BsSafe } from "react-icons/bs";
 import { AiOutlineClose } from "react-icons/ai";
 import CategoryType from "../../types/category";
 import useCategory from "../../hooks/useCategory";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import UpdateCategory from "../modals/updateCategory";
+import ResultType from "../../types/result";
+import Icon from "../../enum/iconType";
+import ResultContext from "../../context/result";
 
 type props = {
   categories: CategoryType[],
   onChange: () => void
 }
 const CategoryTable = ({categories, onChange}: props) => {
+  const resultContext = useContext(ResultContext);
+
   const { deleteCategory } = useCategory();
   const del = (category: CategoryType) => {
     if(!category._id) return;
     deleteCategory([category])
     .then(res => {
       onChange();
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Categoria(s) deletada(s) com sucesso."
+      };
+      resultContext.set(result);
     })
-    .catch(err=>{
-      console.log(err);
+    .catch(error=>{
+      const result: ResultType = {
+        icon: Icon.ERROR,
+        message: error.message
+      };
+      resultContext.set(result);
     })
   } 
 

@@ -1,0 +1,44 @@
+@keyframes showAnim {
+  0%{
+    transform: translateX(150%);
+  }
+  80%{
+    transform: translateX(-5%);
+  }
+  100%{
+    transform: translateX(0);
+  }
+}
+@keyframes hideAnim {
+  0%{
+    transform: translateX(0);
+  }
+  20%{
+    transform: translateX(-5%);
+  }
+  100%{
+    transform: translateX(150%);
+  }
+}
+.container{
+  background-color: var(--white);
+  border-radius: 10px;
+  margin: 20px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+}
+.show{
+  animation: showAnim 0.5s linear forwards;
+}
+.hide{
+  animation: hideAnim 0.5s linear forwards;
+}
+.icon{
+  font-size: 4rem;
+  display: flex;
+}
+.message{
+  font-size: 2rem;
+}

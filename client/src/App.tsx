@@ -12,11 +12,10 @@ function App() {
         <Routes>
           <Route path='/signin' element={<SignIn />}/>
           <Route path='/signup' element={<SignUp/>}/>
-          <Route path='/:tab/' element={<PageProtector><System /></PageProtector>}/>
+          <Route path='/:tab' element={<PageProtector><System /></PageProtector>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-    
   )
 }
 

@@ -5,7 +5,7 @@ import {modalStyle} from "../modalStyle";
 import { selectStyle } from "../selectStyle";
 import { AiOutlineClose } from "react-icons/ai";
 import CategoryType from "../../../types/category";
-import { FormEvent, useEffect, useId, useState } from "react";
+import { FormEvent, useContext, useEffect, useId, useState } from "react";
 import Select from "react-select";
 import Submit from "../../submit";
 import useTransation from "../../../hooks/useTransation";
@@ -13,6 +13,9 @@ import moment,{ Moment } from "moment";
 import TransationType from "../../../types/transation";
 import useCategory from "../../../hooks/useCategory";
 import TransationUpdateType from "../../../types/transationUpdate";
+import ResultContext from "../../../context/result";
+import Icon from "../../../enum/iconType";
+import ResultType from "../../../types/result";
 
 type props = {
   isOpen: boolean,
@@ -22,6 +25,8 @@ type props = {
 }
 
 const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: props) => {
+  const resultContext = useContext(ResultContext);
+  
   const { updateTransation } = useTransation();
 
   const {getCategories} = useCategory();
@@ -36,6 +41,14 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
   const [transationValue, setTransationValue] = useState<number>(transationToUpdate.value);
   const [transationCategory, setTransationCategory] = useState<CategoryType>(transationToUpdate.category);
   const [transationDate, setTransationDate] = useState<Moment>(transationToUpdate.date);
+  
+  // quando a categoria para atuazização mudar, os states serão atualizados
+  useEffect(()=>{
+    setTransationName(transationToUpdate.name);
+    setTransationValue(transationToUpdate.value);
+    setTransationCategory(transationToUpdate.category);
+    setTransationDate(transationToUpdate.date);
+  }, [transationToUpdate]);
   
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -74,11 +87,17 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
     
     updateTransation(options)
     .then(() =>{
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Transação atualizada com sucesso."
+      };
+      resultContext.set(result);
+      
       onUpdate();
       closeModal();
     })
     .catch(error=>{
-      console.log(error.message);
+      setError(error.message);
     })
     .finally(()=>{
       setIsCreating(false);
@@ -126,7 +145,7 @@ const UpdateTransation = ({isOpen, closeModal, transationToUpdate, onUpdate}: pr
             id={date_id}
             type="date"
             max={moment().format("YYYY-MM-DD")} 
-            value={transationDate ? moment(transationDate).format("YYYY-MM-DD") : undefined}
+            value={transationDate ? moment(transationDate).add(1, "day").format("YYYY-MM-DD") : undefined}
             onChange={(e)=> setTransationDate(moment(e.target.value))}
           />
           {

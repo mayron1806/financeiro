@@ -5,7 +5,7 @@ import {modalStyle} from "../modalStyle";
 import { selectStyle } from "../selectStyle";
 import { AiOutlineClose } from "react-icons/ai";
 import CategoryType from "../../../types/category";
-import { FormEvent, useEffect, useId, useState } from "react";
+import { FormEvent, useContext, useEffect, useId, useState } from "react";
 import Select from "react-select";
 import Submit from "../../submit";
 import moment,{ Moment } from "moment";
@@ -13,6 +13,9 @@ import useCategory from "../../../hooks/useCategory";
 import ScheduleTransationType from "../../../types/scheduleTransations";
 import useSchedule from "../../../hooks/useSchedule";
 import ScheduleTransationUpdateType from "../../../types/scheduleTransationUpdate";
+import ResultContext from "../../../context/result";
+import Icon from "../../../enum/iconType";
+import ResultType from "../../../types/result";
 
 type props = {
   isOpen: boolean,
@@ -22,6 +25,8 @@ type props = {
 }
 
 const UpdateSchedule = ({isOpen, closeModal, scheduleToUpdate, onUpdate}: props) => {
+  const resultContext = useContext(ResultContext);
+  
   const { updateSchedule } = useSchedule();
 
   const { getCategories } = useCategory();
@@ -85,11 +90,17 @@ const UpdateSchedule = ({isOpen, closeModal, scheduleToUpdate, onUpdate}: props)
     
     updateSchedule(options)
     .then(res => {
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Transação agendada atualizada com sucesso."
+      };
+      resultContext.set(result);
+
       onUpdate();
       closeModal();
     })
     .catch(error => {
-      console.log(error.message);
+      setError(error.message);
     })
     .finally(()=>{
       setIsUpdating(false);
@@ -135,7 +146,7 @@ const UpdateSchedule = ({isOpen, closeModal, scheduleToUpdate, onUpdate}: props)
             id={next_id}
             type="date"
             min={moment().format("YYYY-MM-DD")} 
-            value={scheduleNext ? moment(scheduleNext).format("YYYY-MM-DD") : undefined}
+            value={scheduleNext ? moment(scheduleNext).add(1, "day").format("YYYY-MM-DD") : undefined}
             onChange={(e)=> setScheduleNext(moment(e.target.value))}
           />
           <label htmlFor={max_id}>N° repetições</label>

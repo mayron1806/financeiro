@@ -5,12 +5,15 @@ import {modalStyle} from "../modalStyle";
 import { selectStyle } from "../selectStyle";
 import { AiOutlineClose } from "react-icons/ai";
 import CategoryType from "../../../types/category";
-import { FormEvent, useEffect, useId, useState } from "react";
+import { FormEvent, useContext, useEffect, useId, useState } from "react";
 import Select from "react-select";
 import color_options from "../../../style/colorOptions";
 import Submit from "../../submit";
 import useCategory from "../../../hooks/useCategory";
 import CategoryUpdateType from "../../../types/categoryUpdate";
+import ResultType from "../../../types/result";
+import ResultContext from "../../../context/result";
+import Icon from "../../../enum/iconType";
 
 type props = {
   isOpen: boolean,
@@ -19,6 +22,8 @@ type props = {
   categoryToUpdate: CategoryType 
 }
 const  UpdateCategory = ({isOpen, closeModal, onUpdate, categoryToUpdate}: props) => {
+  const resultContext = useContext(ResultContext);
+  
   const { updateCategory } = useCategory();
 
   const name_id = useId();
@@ -40,6 +45,8 @@ const  UpdateCategory = ({isOpen, closeModal, onUpdate, categoryToUpdate}: props
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   const sendForm = (e: FormEvent) => {
+    
+
     e.preventDefault();
     const id = categoryToUpdate._id;
     
@@ -62,11 +69,17 @@ const  UpdateCategory = ({isOpen, closeModal, onUpdate, categoryToUpdate}: props
     }
     updateCategory(options)
     .then(() => { 
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Categoria atualizada com sucesso."
+      };
+      resultContext.set(result);
+      
       onUpdate();
       closeModal();
     }) 
     .catch(error => {
-      setError(error.message)
+      setError(error.message);
     })
     .finally(()=>{
       setIsUpdating(false);

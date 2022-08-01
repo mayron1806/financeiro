@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BiAddToQueue } from "react-icons/bi";
 import {FaFilter} from "react-icons/fa";
 import Header from "../../../../components/header";
@@ -7,13 +7,17 @@ import FilterTransation from "../../../../components/modals/filterTransation";
 import Search from "../../../../components/search";
 import TransationCount from "../../../../components/transationCount";
 import TransationTable from "../../../../components/transationTable";
+import ResultContext from "../../../../context/result";
+import Icon from "../../../../enum/iconType";
 import useTransation from "../../../../hooks/useTransation";
+import ResultType from "../../../../types/result";
 import TransationType from "../../../../types/transation";
 import TransationFilterType from "../../../../types/transationFilter";
 import pageStyle from "../pages.module.css";
 import styles from "./transations.module.css";
 
 const Transations = () => {
+
   const { getTransations } = useTransation();
 
   // modals 
@@ -40,7 +44,13 @@ const Transations = () => {
     .then(res => {
       setTransations(res);
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: error.message
+      };
+      useContext(ResultContext).set(result);
+    })
   }
   useEffect(()=>{
     fetchTransations();

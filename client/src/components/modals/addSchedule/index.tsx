@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import { modalStyle } from "../modalStyle";
 import { selectStyle } from "../selectStyle";
 import { AiOutlineClose } from "react-icons/ai";
-import React, { Dispatch, FormEvent, useEffect, useId, useState } from "react";
+import React, { Dispatch, FormEvent, useContext, useEffect, useId, useState } from "react";
 import Select from "react-select";
 import moment, { Moment } from "moment";
 import Submit from "../../submit";
@@ -12,6 +12,9 @@ import CategoryType from "../../../types/category";
 import useCategory from "../../../hooks/useCategory";
 import useSchedule from "../../../hooks/useSchedule";
 import ScheduleTransationType from "../../../types/scheduleTransations";
+import ResultContext from "../../../context/result";
+import Icon from "../../../enum/iconType";
+import ResultType from "../../../types/result";
 
 type props = {
   isOpen: boolean,
@@ -19,6 +22,8 @@ type props = {
   onAdd: () => void
 }
 const AddSchedule = ({isOpen, closeModal, onAdd}: props) => {
+  const resultContext = useContext(ResultContext);
+
   const { createSchedule } = useSchedule();
 
   //IDs
@@ -79,12 +84,18 @@ const AddSchedule = ({isOpen, closeModal, onAdd}: props) => {
       setRepeatCount(0);
       setTransationValue(0);
 
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Transação agendada adicionada com sucesso."
+      };
+      resultContext.set(result);
+      
       onAdd();
       
       closeModal();
     })
-    .catch(err => {
-      setError(err.message);
+    .catch(error => {
+      setError(error.message);
     })
     .finally(()=>{
       setIsCreating(false);

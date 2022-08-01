@@ -1,9 +1,16 @@
 .container{
   display: grid;
   grid-template-columns: minmax(250px, 25vw) 1fr;
+  overflow: hidden;
 } 
 .content{
   background-color: var(--black-light);
-  overflow: auto;
   max-height: 100vh;
+}
+.message{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: max-content;
+  overflow: hidden;
 }

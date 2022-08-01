@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {BiAddToQueue} from "react-icons/bi";
 import CategoryTable from "../../../../components/categoryTable";
 import Header from "../../../../components/header";
 import AddCategory from "../../../../components/modals/addCategoty";
+import ResultContext from "../../../../context/result";
+import Icon from "../../../../enum/iconType";
 import useCategory from "../../../../hooks/useCategory";
 import CategoryType from "../../../../types/category";
+import ResultType from "../../../../types/result";
 
 import pageStyle from "../pages.module.css";
 
 const Category = () => {  
+  
   const { getCategories } = useCategory();
 
   const [addIsOpen, setAddIsOpen] = useState<boolean>(false);
@@ -23,7 +27,11 @@ const Category = () => {
       setCategories(res);
     })
     .catch(error=>{
-      console.log(error);
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: error.message
+      };
+      useContext(ResultContext).set(result);
     })
   }
   useEffect(()=> {

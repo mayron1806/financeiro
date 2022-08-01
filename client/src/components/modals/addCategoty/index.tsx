@@ -1,4 +1,4 @@
-import React, { Dispatch, FormEvent, useId, useState } from "react";
+import { FormEvent, useContext, useId, useState } from "react";
 import Modal from "react-modal";
 import Select from "react-select";
 import Submit from "../../submit";
@@ -9,6 +9,9 @@ import CategoryType from "../../../types/category";
 import { modalStyle } from "../modalStyle";
 import { selectStyle } from "../selectStyle";
 import color_options from "../../../style/colorOptions";
+import ResultType from "../../../types/result";
+import Icon from "../../../enum/iconType";
+import ResultContext from "../../../context/result";
 
 type props = {
   isOpen: boolean,
@@ -16,6 +19,8 @@ type props = {
   onAdd: () => void
 }
 const AddCategory = ({isOpen, closeModal, onAdd}: props) => {
+  const resultContext = useContext(ResultContext);
+
   const { createCategory } = useCategory();
   // IDs
   const name_id = useId();
@@ -58,6 +63,12 @@ const AddCategory = ({isOpen, closeModal, onAdd}: props) => {
       setSelectedColor("");
       setIsEntry(undefined);
 
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Categoria adicionada com sucesso."
+      };
+      resultContext.set(result);
+      
       onAdd();
       
       closeModal();

@@ -5,15 +5,20 @@ import { BiEdit } from "react-icons/bi";
 import { BsSafe } from "react-icons/bs";
 import { AiOutlineClose } from "react-icons/ai";
 import moment from "moment";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import UpdateTransation from "../modals/updateTransation";
 import useTransation from "../../hooks/useTransation";
+import ResultType from "../../types/result";
+import Icon from "../../enum/iconType";
+import ResultContext from "../../context/result";
 
 type props = {
   transatios: TransationType[],
   onChange: () => void
 }
 const TransationTable = ({transatios, onChange}: props) => {
+  const resultContext = useContext(ResultContext);
+
   const { deleteTransations } = useTransation();
   
   const [selectedTransation, setSelectedTransation] = useState<TransationType>();
@@ -26,9 +31,18 @@ const TransationTable = ({transatios, onChange}: props) => {
     deleteTransations([transation])
     .then(res=>{
       onChange();
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Transação deletada com sucesso."
+      };
+      resultContext.set(result);
     })  
     .catch(error=>{
-      console.log(error.message)
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: error.message
+      };
+      resultContext.set(result);
     })
   }
   
@@ -59,7 +73,7 @@ const TransationTable = ({transatios, onChange}: props) => {
                       style={{backgroundColor: category.color}}
                     >{category.name}</span>
                   </td>
-                  <td>{moment(date).format("DD/MM/YYYY")}</td>
+                  <td>{moment(date).add(1, "day").format("DD/MM/YYYY")}</td>
                   <td className={styles.icon}>
                     <BiEdit onClick={() => {
                       setSelectedTransation(transation);

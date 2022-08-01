@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BiAddToQueue } from "react-icons/bi";
 import Header from "../../../../components/header";
 import AddSchedule from "../../../../components/modals/addSchedule";
 import ScheduleTable from "../../../../components/scheduleTable";
+import ResultContext from "../../../../context/result";
+import Icon from "../../../../enum/iconType";
 import useSchedule from "../../../../hooks/useSchedule";
+import ResultType from "../../../../types/result";
 import ScheduleTransationType from "../../../../types/scheduleTransations";
 import pageStyle from "../pages.module.css";
 
 const Schedule = () => {
+
   const [addScheduleIsOpen, setAddScheduleIsOpen] = useState<boolean>(false);
   const openModal = ()=> setAddScheduleIsOpen(true);
   const closeModal = ()=> setAddScheduleIsOpen(false);
@@ -19,9 +23,15 @@ const Schedule = () => {
     getSchedules()
     .then(res=>{
       setSchedules(res);
+      console.log(res);
+      
     })
     .catch(error=>{
-      console.log(error);
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: error.message
+      };
+      useContext(ResultContext).set(result);
     })
   }
   

@@ -6,12 +6,15 @@ import { MdMoneyOffCsred } from "react-icons/md";
 import pageStyle from "../pages.module.css"
 import styles from "./home.module.css";
 import Select, { CSSObjectWithLabel } from "react-select";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TransationCount from "../../../../components/transationCount";
 import TransationTable from "../../../../components/transationTable";
 import useTransation from "../../../../hooks/useTransation";
 import TransationType from "../../../../types/transation";
 import moment from "moment";
+import ResultContext from "../../../../context/result";
+import ResultType from "../../../../types/result";
+import Icon from "../../../../enum/iconType";
 
 // filter options
 const options = [
@@ -45,10 +48,11 @@ const getTransationsSum = (transations: TransationType[]) => {
 }
 
 const Home = () => {
+
   const { getTransations } = useTransation();  
 
   // todas transações
-  const [allTransations, setAllTransations] = useState<TransationType[]>([]);
+  const [transations, setTransations] = useState<TransationType[]>([]);
 
   // transações filtradas
   const [filteredTransations, setFilteredTransations] = useState<TransationType[]>([]);
@@ -58,10 +62,14 @@ const Home = () => {
   const fetchTransations = () => {
     getTransations()
     .then(res => {
-      setAllTransations(res);
+      setTransations(res);
     })
-    .catch(err=>{
-      console.log(err);
+    .catch(error => {
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: error.message
+      };
+      useContext(ResultContext).set(result);
     })
   }
   // pega transações filtradas por data
@@ -70,8 +78,12 @@ const Home = () => {
     .then(res => {
       setFilteredTransations(res);
     })
-    .catch(err=>{
-      console.log(err);
+    .catch(error => {
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: error.message
+      };
+      useContext(ResultContext).set(result);
     })
   }
   
@@ -87,8 +99,8 @@ const Home = () => {
     fetchTransations();
     fetchTransationsByDate();
   }
-  const entry_sum = getTransationsSum(allTransations.filter(t=> t.category.is_entry));
-  const exit_sum = getTransationsSum(allTransations.filter(t=> !t.category.is_entry));
+  const entry_sum = getTransationsSum(transations.filter(t=> t.category.is_entry));
+  const exit_sum = getTransationsSum(transations.filter(t=> !t.category.is_entry));
   const total = entry_sum + exit_sum;
   return(
     <div>

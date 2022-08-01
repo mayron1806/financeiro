@@ -38,6 +38,7 @@
 }
 .menu li:hover a, .menu li.active a{
   background-color: var(--black-light);
+  box-shadow: inset 10px 0px 5px var(--black);
   color: var(--blue);
 }
 .menu li svg{

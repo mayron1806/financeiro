@@ -1,4 +1,4 @@
-import  { FormEvent, useEffect, useId, useState } from "react";
+import  { FormEvent, useContext, useEffect, useId, useState } from "react";
 import Modal from "react-modal";
 import Select from "react-select";
 import Submit from "../../submit";
@@ -11,6 +11,9 @@ import moment, { Moment } from "moment";
 import { modalStyle } from "../modalStyle";
 import { selectStyle } from "../selectStyle";
 import useCategory from "../../../hooks/useCategory";
+import ResultContext from "../../../context/result";
+import Icon from "../../../enum/iconType";
+import ResultType from "../../../types/result";
 
 
 type props = {
@@ -19,6 +22,7 @@ type props = {
   onAdd: ()=> void
 }
 const AddTransation = ({isOpen, closeModal, onAdd}: props) => {
+  const resultContext = useContext(ResultContext);
   // categorias 
   const { getCategories } = useCategory();
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -75,13 +79,19 @@ const AddTransation = ({isOpen, closeModal, onAdd}: props) => {
       setTransationValue(0);
       setTransationCategory(undefined);
       setTransationDate(moment());
+
+      const result: ResultType = {
+        icon: Icon.SUCCESS,
+        message: "Transação adicionada com sucesso."
+      };
       
+      resultContext.set(result);
       onAdd();
       
       closeModal();
     })
-    .catch(error=>{
-      console.log(error);
+    .catch(error => {
+      setError(error.message);
     })
     .finally(()=>{
       setIsCreating(false);
